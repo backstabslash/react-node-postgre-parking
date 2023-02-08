@@ -1,0 +1,77 @@
+.headerWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #8FB996;
+    background-color: #1E3322;
+    padding: 10px 10px 10px 10px;
+}
+
+.helpDiv {
+    width: 50px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.titleDiv {
+    cursor: default;
+    flex-grow: 2;
+    width: 100%;
+    font-family: "Lora";
+    font-size: 32px;
+    color: #8FB996;
+    font-weight: 700;
+    text-align: center;
+}
+
+.persDiv {
+    display: flex;
+    align-self: center;
+    width: 50px;
+    height: 25px;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+}
+
+.fa-question {
+    cursor: pointer;
+    font-size: 24px;
+    color: #8FB996;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.fa-question:hover {
+    border-bottom: 1px solid #8FB996;
+}
+
+.fa-ellipsis-vertical {
+    cursor: pointer;
+    font-size: 24px;
+    color: #8FB996;
+    padding: 0;
+    margin: 0;
+    margin-right: 10px;
+}
+
+.fa-ellipsis-vertical:hover {
+    border-bottom: 1px solid #8FB996;
+}
+
+.fa-chart-bar {
+    cursor: pointer;
+    font-size: 24px;
+    color: #8FB996;
+    padding: 0;
+    margin: 0;
+    margin-right: 5px;
+}
+
+.fa-chart-bar:hover {
+    border-bottom: 1px solid #8FB996;
+}
