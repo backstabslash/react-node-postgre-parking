@@ -9,17 +9,17 @@ class Parking extends Component {
         data: []
     };
     componentDidMount() {
-        axios.get('http://localhost:3001/api/parkingslot').then((res) => {
+        axios.get('http://localhost:3001/api/users').then((res) => {
             this.setState({ data: res.data.rows });
         })
     }
     render() {
         const { data } = this.state;
         return (
-            <>
+            <div className="parkingWrapper">
                 <Header />
                 <Main data={data} />
-            </>
+            </div>
         );
     };
 }

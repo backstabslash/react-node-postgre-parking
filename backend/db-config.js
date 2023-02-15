@@ -1,10 +1,12 @@
 const Pool = require('pg').Pool;
-const pool = new Pool({
-    user: "postgres",
-    password: "naruto123",
-    host: "localhost",
-    port: "5432",
-    database: "super_parking"
-})
 
-module.exports = pool;
+module.exports = function dynamicPool(role = "connect_user") {
+    const pool = new Pool({
+        user: `${role}`,
+        password: process.env[`${role}_pass`],
+        host: "localhost",
+        port: "5432",
+        database: "super_parking"
+    });
+    return pool;
+};

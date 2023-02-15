@@ -1,19 +1,19 @@
-.bebra {
+.slots {
     cursor: default;
-    flex-grow: 2;
     width: 100%;
     font-family: "Lora";
     font-size: 32px;
-    color: #8FB996;
+    color: #909090;
     font-weight: 700;
 }
 
-.mainwrapper {
+.mainWrapper {
     display: flex;
+    position: relative;
+    top: 60px;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
-    border-bottom: 1px solid #8FB996;
-    background-color: white;
+    background-color: #010101;
     padding: 10px 10px 10px 10px;
 }

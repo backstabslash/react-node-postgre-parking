@@ -3,8 +3,8 @@ import './main.css';
 
 function Main({ data }) {
     return (
-        <div className="mainwrapper"> {[...data].map(({ slot_id, vehicle_category, price, status }) => (
-            <div className="bebra" key={slot_id}>{slot_id} {vehicle_category} {price} {status}</div>
+        <div className="mainWrapper"> {[...data].map(({ user_id, username, password, full_name, phone_number }) => (
+            <div className="slots" key={user_id}>{username} {password} {full_name} {phone_number}</div>
         ))}
         </div>
     )
