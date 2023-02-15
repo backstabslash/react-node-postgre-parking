@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import './parking.css';
-import Header from '../components/header/header'
-import Main from '../components/main/main'
+import Header from './header/header'
+import Main from './main/main'
 
 class Parking extends Component {
     state = {

@@ -10,7 +10,7 @@
 .mainWrapper {
     display: flex;
     position: relative;
-    top: 60px;
+    top: 40px;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;

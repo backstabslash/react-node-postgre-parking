@@ -30,7 +30,7 @@ const Login = () => {
             const accessToken = response?.data?.token;
             localStorage.setItem("accessToken", accessToken);
             const role = response?.data?.role;
-            setAuth({ role, accessToken });
+            setAuth({ user, role, accessToken });
             navigate("/");
         } catch (err) {
             if (!err?.response) setErrMsg('no server response');
