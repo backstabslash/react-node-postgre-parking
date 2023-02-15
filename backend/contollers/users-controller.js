@@ -28,8 +28,7 @@ class UsersController {
             if (!newUser.rowCount) throw "no such user yet"; // if select returned nothing then throw error
         }
         catch (err) {
-            console.log(newUser);
-            return res.status(400).json(err);
+            return res.status(401).json(err); // unauthorized
         }
         res.json({ token, role: newUser.rows[0].category });
     }

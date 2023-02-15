@@ -34,8 +34,7 @@ const Login = () => {
             navigate("/");
         } catch (err) {
             if (!err?.response) setErrMsg('no server response');
-            else if (err.response?.status === 400) setErrMsg('such user does not exist');
-            // else if (err.response?.status === 401) setErrMsg('unauthorized');
+            else if (err.response?.status === 401) setErrMsg('such user does not exist');
             else setErrMsg('login failed');
         }
     }

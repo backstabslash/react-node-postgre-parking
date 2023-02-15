@@ -8,10 +8,8 @@ function Header() {
     return (
         <div className="headerWrapper">
             <div className='content'>
-                super parking
-                {auth.role === "client" ? <div> <i className="fa-solid fa-user-tie"></i> hi, {auth.user} </div> : ""}
-                <a href="/sign_up">sign up</a>
-                <a href="/sign_in">log in</a>
+                <a className="header--button-parking" href="/">super parking</a>
+                {auth.role === "client" || auth.role === "administrator" ? <><div className="header--personal"> <a className="header--button-username" href="/">{auth.user}</a></div> <a href="/sign_in" className="header--button-logout">log out</a> </> : <div className="sign-split"><a className="header--button-username" href="/sign_up">sign up</a> / <a className="header--button-username" href="/sign_in">log in</a></div>}
             </div>
         </div>
     )

@@ -26,7 +26,47 @@
     text-align: left;
 }
 
+.header--button-parking:link,
+.header--button-parking:visited,
+.header--button-parking:active {
+    color: #e5e5e5;
+    text-decoration: none;
+}
 
-.fa-user-tie {
-    font-size: 16px;
+.header--button-parking:hover {
+    color: rgba(229, 229, 229, 0.75);
+}
+
+.header--personal {
+    color: #0381fe;
+}
+
+.header--personal-username {
+    text-decoration: underline;
+}
+
+.header--button-logout:link,
+.header--button-logout:visited,
+.header--button-logout:active {
+    color: #F76F68;
+    text-decoration: none;
+}
+
+.header--button-logout:hover {
+    color: rgba(247, 111, 104, .75);
+}
+
+.header--button-username:link,
+.header--button-username:visited,
+.header--button-username:active {
+    color: #0381fe;
+    text-decoration: none;
+}
+
+.header--button-username:hover {
+    color: rgba(3, 129, 254, .75);
+}
+
+.sign-split {
+    color: #0381fe;
 }
