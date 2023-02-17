@@ -1,19 +1,16 @@
 .slots {
-    cursor: default;
-    width: 100%;
-    font-family: "Lora";
-    font-size: 32px;
-    color: #909090;
-    font-weight: 700;
+  cursor: default;
+  font-family: "Lora";
+  font-size: 32px;
+  color: #909090;
+  font-weight: 700;
 }
 
 .mainWrapper {
-    display: flex;
-    position: relative;
-    top: 40px;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    background-color: #010101;
-    padding: 10px 10px 10px 10px;
+  position: relative;
+  top: 40px;
+  overflow-wrap: break-word;
+  width: 100%;
+  background-color: #010101;
+  padding: 10px 0 10px 0;
 }
