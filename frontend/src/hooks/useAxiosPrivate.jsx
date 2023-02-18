@@ -12,6 +12,7 @@ const useAxiosPrivate = () => {
       (config) => {
         if (!config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
+          config.headers["Role"] = `${auth.role}`;
         }
         return config;
       },
@@ -26,6 +27,7 @@ const useAxiosPrivate = () => {
           prevRequest.sent = true;
           const newAccessToken = await refresh();
           prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          prevRequest.headers["Role"] = `${auth.role}`;
           return axiosPrivate(prevRequest);
         }
         return Promise.reject(error);

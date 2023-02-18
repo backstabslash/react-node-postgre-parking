@@ -3,12 +3,6 @@ const sha256 = require("sha256");
 const jwt = require("jsonwebtoken");
 
 class AuthController {
-  // get all users
-  async getUsers(req, res) {
-    const allUsers = await db().query(`select * from Users`);
-    res.json(allUsers);
-  }
-
   // signup
   async signUpUser(req, res) {
     const { username, password, full_name, phone_number } = req.body;
@@ -19,7 +13,7 @@ class AuthController {
         [username, password, full_name, phone_number]
       );
     } catch (err) {
-      newUser = db.query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
+      newUser = db().query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
       if (err.code == 23505) return res.status(409).json(err); // duplicate
       else return res.status(400).json(err); // bad request
     }
