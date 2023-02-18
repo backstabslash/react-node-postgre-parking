@@ -9,9 +9,11 @@ type DataRow = {
 };
 
 type MainProps = {
-  data: {
-    rows: DataRow[];
-  } | null;
+  data:
+    | {
+        rows: DataRow[];
+      }
+    | undefined;
 };
 
 function Main({ data }: MainProps) {

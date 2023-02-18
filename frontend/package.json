@@ -1,6 +1,7 @@
 {
   "name": "super_parking",
   "version": "0.1.0",
+  "main": "src/index.tsx",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
