@@ -8,12 +8,12 @@ class AuthController {
     const { username, password, full_name, phone_number } = req.body;
     let newUser;
     try {
-      newUser = await db().query(
+      newUser = await db("connect_user").query(
         `insert into Users (username, password, full_name, phone_number) values ($1, $2, $3, $4)`,
         [username, password, full_name, phone_number]
       );
     } catch (err) {
-      newUser = db().query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
+      newUser = db("connect_user").query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
       if (err.code == 23505) return res.status(409).json(err); // duplicate
       else return res.status(400).json(err); // bad request
     }
@@ -24,7 +24,7 @@ class AuthController {
   async signInUser(req, res) {
     try {
       const { username, password } = req.body;
-      const foundUser = await db().query(
+      const foundUser = await db("connect_user").query(
         `select category from Users where Users.username = $1 and Users.password = $2`,
         [username, sha256(password)]
       );
@@ -68,7 +68,7 @@ class AuthController {
       refreshToken,
       process.env.REFRESH_TOKEN_SALT,
       async (err, decoded) => {
-        let foundUser = await db().query(
+        let foundUser = await db(req.body.role).query(
           `select * from Users where Users.username = $1`,
           [decoded.username]
         );
@@ -85,6 +85,14 @@ class AuthController {
         });
       }
     );
+  }
+
+  // guest needs it too
+  async getParkingSlots(req, res) {
+    const allSlots = await db("connect_user").query(
+      `select * from Parking_Slot`
+    );
+    res.json(allSlots);
   }
 }
 

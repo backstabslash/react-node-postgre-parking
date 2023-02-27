@@ -13,7 +13,7 @@ class BookingController {
       amount_paid,
       remarks,
     } = req.body;
-    const newBooking = await db().query(
+    const newBooking = await db(req.body.role).query(
       `insert into Parking_Slot (vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks) values ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [
         vehicle_id,
@@ -32,13 +32,25 @@ class BookingController {
 
   // get all bookings
   async getBookings(req, res) {
-    const allBookings = await db().query(`select * from Booking`);
+    const allBookings = await db(req.body.role).query(`select * from Booking`);
+    res.json(allBookings);
+  }
+
+  async getBookingsByUsername(req, res) {
+    console.log(req.body.user, req.body.role);
+    const allBookings = await db(req.body.role).query(
+      `select booking_id, b.vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks from Booking b
+       inner join Vehicle v on b.vehicle_id = v.vehicle_id
+	     inner join Users u on v.user_id = u.user_id
+       where u.username = $1`,
+      [req.params.username]
+    );
     res.json(allBookings);
   }
 
   // get single booking by id
   async getBookingByID(req, res) {
-    const singleBooking = await db().query(
+    const singleBooking = await db(req.body.role).query(
       `select * from Booking where Booking.booking_id = $1`,
       [req.body.booking_id]
     );
@@ -47,9 +59,10 @@ class BookingController {
 
   // delete booking by id
   async deleteBookingByID(req, res) {
-    db().query(`delete from Booking where Booking.booking_id = $1`, [
-      req.body.booking_id,
-    ]);
+    db(req.body.role).query(
+      `delete from Booking where Booking.booking_id = $1`,
+      [req.body.booking_id]
+    );
   }
 
   // update whole booking by id
@@ -65,7 +78,7 @@ class BookingController {
       remarks,
       booking_id,
     } = req.body;
-    db().query(
+    db(req.body.role).query(
       `update Booking set vehicle_id = $1, slot_id = $2, start_date = $3, end_date = $4, status = $5, amount_due = $6, amount_paid = $7, remarks = $8 where Booking.booking_id = $9`,
       [
         vehicle_id,

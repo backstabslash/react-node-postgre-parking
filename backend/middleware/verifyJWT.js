@@ -9,6 +9,7 @@ const verifyJWT = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN_SALT, (err, decoded) => {
     if (err) return res.sendStatus(403); // invalid token
     req.body.user = decoded.username;
+    req.body.role = decoded.role;
     next();
   });
 };

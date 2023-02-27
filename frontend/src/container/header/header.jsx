@@ -6,7 +6,6 @@ import axios from "../../axios";
 
 function Header() {
   const { setAuth, auth } = useContext(AuthContext);
-  console.log(auth);
   const handleLogOut = async () => {
     setAuth({});
     try {

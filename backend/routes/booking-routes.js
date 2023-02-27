@@ -5,10 +5,11 @@ const BookingController = require("../contollers/booking-controller");
 router.post("/booking", BookingController.createBooking);
 
 router.get("/bookings", BookingController.getBookings);
-router.get("/booking/id/:id", BookingController.getBookingByID);
+router.get("/id/:id", BookingController.getBookingByID);
+router.get("/username/:username", BookingController.getBookingsByUsername);
 
-router.delete("/booking/id/:id", BookingController.deleteBookingByID);
+router.delete("/id/:id", BookingController.deleteBookingByID);
 
-router.put("/booking/id/:id", BookingController.putBookingByID);
+router.put("/id/:id", BookingController.putBookingByID);
 
 module.exports = router;
