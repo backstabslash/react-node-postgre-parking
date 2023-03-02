@@ -1,13 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import StateContext from "../../../components/context/stateprovider";
 import AuthContext from "../../../components/context/authprovider";
 import "./slotmodal.scss";
 
-const SlotModal = ({ openSlotModal, setOpenSlotModal, slot }) => {
-  const [curSlot, setCurSlot] = useState(slot);
-  useEffect(() => {
-    setCurSlot(slot);
-  }, [slot]);
+const SlotModal = ({
+  openSlotModal,
+  setOpenSlotModal,
+  slot,
+  setRenderBookingSection,
+  setSlot,
+}) => {
   const { slots } = useContext(StateContext);
   const { auth } = useContext(AuthContext);
   return (
@@ -21,10 +23,10 @@ const SlotModal = ({ openSlotModal, setOpenSlotModal, slot }) => {
             slot n{" "}
             <span
               className={`slot-chars-text ${
-                curSlot.status === "Available" ? "" : "slot--taken"
+                slot.status === "Available" ? "" : "slot--taken"
               }`}
             >
-              {curSlot.slot_id}
+              {slot.slot_id}
             </span>
           </div>
           <div className="headerIDiv">
@@ -38,44 +40,51 @@ const SlotModal = ({ openSlotModal, setOpenSlotModal, slot }) => {
         <div className="slot-chars">
           suitable for :{" "}
           <span className="slot-chars-text">
-            {curSlot.vehicle_category?.toLowerCase()}
+            {slot.vehicle_category?.toLowerCase()}
           </span>
           <br></br>
           cost per day :{" "}
-          <span className="slot-chars-text">{curSlot.price} uah</span>
+          <span className="slot-chars-text">{slot.price} uah</span>
           <br></br>
           currently :{" "}
           <span
             className={`slot-chars-text ${
-              curSlot.status === "Available" ? "" : "slot--taken"
+              slot.status === "Available" ? "" : "slot--taken"
             }`}
           >
             {" "}
-            {curSlot.status?.toLowerCase()}
+            {slot.status?.toLowerCase()}
           </span>
         </div>
         <div className="btnWrapper">
           <button
             className="btn"
             onClick={() => {
-              curSlot.slot_id === "1"
-                ? setCurSlot(slots[slots.length - 1])
-                : setCurSlot(
-                    slots[(parseInt(curSlot.slot_id) - 2) % slots.length]
-                  );
+              slot.slot_id === "1"
+                ? setSlot(slots[slots.length - 1])
+                : setSlot(slots[(parseInt(slot.slot_id) - 2) % slots.length]);
             }}
           >
             prev
           </button>
           {auth.role === "client" || auth.role === "administrator" ? (
-            <button className="btn bookbtn"> book </button>
+            <button
+              className="btn bookbtn"
+              onClick={() => {
+                setRenderBookingSection(true);
+                setOpenSlotModal(false);
+              }}
+            >
+              {" "}
+              book{" "}
+            </button>
           ) : (
             <></>
           )}
           <button
             className="btn"
             onClick={() => {
-              setCurSlot(slots[curSlot.slot_id % slots.length]);
+              setSlot(slots[slot.slot_id % slots.length]);
             }}
           >
             next

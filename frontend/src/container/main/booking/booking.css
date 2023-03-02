@@ -1,0 +1,92 @@
+.bookingWrapper {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 40px;
+  overflow-wrap: break-word;
+  width: 80%;
+  background-color: rgba(22, 22, 23, 0.8);
+  border: 1px solid rgba(3, 129, 254, 0.8);
+  margin-top: 10px;
+}
+
+.stats {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(3, 129, 254, 0.8);
+}
+
+.statContainer {
+  flex: 1;
+  font-family: "Lora";
+  color: rgba(3, 129, 254, 0.8);
+  font-weight: 700;
+}
+
+.statProp {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.statLabel {
+  font-size: 12px;
+  display: flex;
+  font-weight: 400;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 5px;
+}
+
+.busySlot {
+  color: rgba(247, 111, 104, 0.8);
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: center;
+  padding: 5px 0 5px 0;
+}
+
+.closeBookingBtn {
+  width: 70px;
+  padding: 0.5rem;
+  background-color: rgba(247, 111, 104, 0.8);
+  border-color: rgba(247, 111, 104, 0.8);
+  border: 1px solid rgba(247, 111, 104, 0.8);
+  color: rgba(22, 22, 23);
+  cursor: pointer;
+  border-radius: 20px;
+  font-weight: bold;
+  user-select: none;
+}
+
+.closeBookingBtn:hover {
+  box-shadow: 0 0 2px 1px rgba(247, 111, 104, 0.8);
+}
+
+.userInfo {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(3, 129, 254, 0.8);
+  font-family: "Lora";
+  color: rgba(3, 129, 254, 0.8);
+  font-weight: 700;
+}
+
+.userLabel {
+  font-size: 12px;
+  font-weight: 400;
+  padding-top: 5px;
+}

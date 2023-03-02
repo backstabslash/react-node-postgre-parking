@@ -37,7 +37,6 @@ class BookingController {
   }
 
   async getBookingsByUsername(req, res) {
-    console.log(req.body.user, req.body.role);
     const allBookings = await db(req.body.role).query(
       `select booking_id, b.vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks from Booking b
        inner join Vehicle v on b.vehicle_id = v.vehicle_id

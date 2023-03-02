@@ -4,9 +4,12 @@
   flex-wrap: wrap;
   top: 40px;
   overflow-wrap: break-word;
-  width: 50%;
-  background-color: #010101;
+  justify-content: center;
+  width: 80%;
+  background-color: rgba(22, 22, 23, 0.8);
+  border: 1px solid rgba(3, 129, 254, 0.8);
   padding: 10px 0 10px 0;
+  margin-top: 10px;
 }
 
 .slot-top-text {

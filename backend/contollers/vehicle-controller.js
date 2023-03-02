@@ -19,7 +19,6 @@ class VehicleController {
 
   // get all vehicles by username
   async getVehiclesByUsername(req, res) {
-    console.log(req.body.user, req.body.role);
     const allVehicles = await db(req.body.role).query(
       `select vehicle_id, vehicle_category, brand, plate_number from Vehicle v
        inner join Users u on v.user_id = u.user_id
