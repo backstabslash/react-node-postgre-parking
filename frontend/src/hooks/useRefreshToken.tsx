@@ -1,18 +1,20 @@
 import axios from "../axios";
-import { useContext } from "react";
-import AuthContext from "../components/context/authprovider";
+import { setAuth } from "../redux/auth";
+import { useDispatch } from "react-redux";
 
 const useRefreshToken = (): (() => Promise<string>) => {
-  const { setAuth } = useContext(AuthContext);
+  const dispatch = useDispatch();
   const refresh = async () => {
     const response = await axios.get("user/refresh", {
       withCredentials: true,
     });
-    setAuth({
-      username: response.data.username,
-      accessToken: response.data.accessToken,
-      role: response.data.role,
-    });
+    dispatch(
+      setAuth({
+        username: response.data.username,
+        accessToken: response.data.accessToken,
+        role: response.data.role,
+      })
+    );
     return response.data.accessToken;
   };
   return refresh;

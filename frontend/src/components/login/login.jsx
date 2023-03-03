@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "../../components/context/authprovider";
+import { useRef, useState, useEffect } from "react";
+import { useAppDispatch } from "../../redux/hooks";
+import { setAuth } from "../../redux/auth";
 import axios from "../../axios";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
@@ -7,7 +8,7 @@ import "./login.css";
 const LOGIN_URL = "/user/sign_in";
 
 const Login = () => {
-  const { setAuth } = useContext(AuthContext);
+  const dispatch = useAppDispatch();
   const userRef = useRef();
   const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ const Login = () => {
       );
       const accessToken = response?.data?.accessToken;
       const role = response?.data?.role;
-      setAuth({ username: user, role, accessToken });
+      dispatch(setAuth({ username: user, role, accessToken }));
       navigate("/");
     } catch (err) {
       if (!err?.response) setErrMsg("no server response");

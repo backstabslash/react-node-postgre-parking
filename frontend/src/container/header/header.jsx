@@ -1,18 +1,21 @@
 import React from "react";
-import { useContext } from "react";
-import AuthContext from "../../components/context/authprovider";
 import "./header.css";
 import axios from "../../axios";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+import { setAuth } from "../../redux/auth";
 
 function Header() {
-  const { setAuth, auth } = useContext(AuthContext);
+  const auth = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+
   const handleLogOut = async () => {
-    setAuth({});
+    dispatch(
+      setAuth({ username: null, role: "connect_user", accessToken: null })
+    );
     try {
       const response = await axios("user/sign_out", {
         withCredentials: true,
       });
-      console.log(response);
     } catch (err) {
       console.error(err);
     }

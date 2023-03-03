@@ -1,11 +1,11 @@
 import { axiosPrivate } from "../axios";
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
 import { AxiosInstance } from "axios";
 import useRefreshToken from "./useRefreshToken";
-import AuthContext from "../components/context/authprovider";
+import { useAppSelector } from "../redux/hooks";
 
 const useAxiosPrivate = (): AxiosInstance => {
-  const { auth } = useContext(AuthContext);
+  const auth = useAppSelector((state) => state.auth);
   const refresh = useRefreshToken();
 
   useEffect(() => {

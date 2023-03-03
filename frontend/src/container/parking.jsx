@@ -5,15 +5,16 @@ import Slot from "./main/slot";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import StateContext from "../components/context/stateprovider";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../components/context/authprovider";
+import { useSelector } from "react-redux";
 import axios from "../axios";
 
 const Parking = () => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+
   const { setSlots, setVehicles, setBookings, setDiscounts } =
     useContext(StateContext);
-  const { auth } = useContext(AuthContext);
   useEffect(() => {
     let isMounted = true;
     axios

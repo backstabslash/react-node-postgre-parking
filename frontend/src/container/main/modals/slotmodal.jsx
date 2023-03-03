@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import StateContext from "../../../components/context/stateprovider";
-import AuthContext from "../../../components/context/authprovider";
 import "./slotmodal.scss";
+import { useAppSelector } from "../../../redux/hooks";
 
 const SlotModal = ({
   openSlotModal,
@@ -11,7 +11,7 @@ const SlotModal = ({
   setSlot,
 }) => {
   const { slots } = useContext(StateContext);
-  const { auth } = useContext(AuthContext);
+  const auth = useAppSelector((state) => state.auth);
   return (
     <div
       className={`overlay animated ${openSlotModal ? "show" : ""}`}

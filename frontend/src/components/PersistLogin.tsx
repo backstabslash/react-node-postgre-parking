@@ -1,12 +1,12 @@
 import { Outlet } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import useRefreshToken from "../hooks/useRefreshToken";
-import AuthContext from "./context/authprovider";
+import { useAppSelector } from "../redux/hooks";
 
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const refresh = useRefreshToken();
-  const { auth } = useContext(AuthContext);
+  const auth = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     let isMounted: boolean = true;
