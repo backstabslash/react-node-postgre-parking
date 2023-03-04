@@ -1,11 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { useAppDispatch } from "../../redux/hooks";
-import { setAuth } from "../../redux/auth";
-import axios from "../../axios";
+import { login } from "../../redux/auth";
+
 import { useNavigate } from "react-router-dom";
 import "./login.css";
-
-const LOGIN_URL = "/user/sign_in";
 
 const Login = () => {
   const dispatch = useAppDispatch();
@@ -26,27 +24,15 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        LOGIN_URL,
-        {
-          username: user,
-          password: pwd,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      const accessToken = response?.data?.accessToken;
-      const role = response?.data?.role;
-      dispatch(setAuth({ username: user, role, accessToken }));
-      navigate("/");
-    } catch (err) {
-      if (!err?.response) setErrMsg("no server response");
-      else if (err.response?.status === 401)
-        setErrMsg("such user does not exist");
-      else setErrMsg("login failed");
-    }
+    dispatch(login({ username: user, password: pwd }))
+      .unwrap()
+      .then(() => navigate("/"))
+      .catch((err) => {
+        if (!err?.response) setErrMsg("no server response");
+        else if (err.response?.status === 401)
+          setErrMsg("such user does not exist");
+        else setErrMsg("login failed");
+      });
   };
 
   return (

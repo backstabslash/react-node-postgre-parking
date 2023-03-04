@@ -42,7 +42,7 @@ class AuthController {
       );
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 12 * 60 * 60 * 1000,
       });
       res.json({ accessToken, role: foundUser.rows[0].category });
     } catch (err) {

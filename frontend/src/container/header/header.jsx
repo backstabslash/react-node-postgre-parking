@@ -1,24 +1,19 @@
 import React from "react";
 import "./header.css";
-import axios from "../../axios";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { setAuth } from "../../redux/auth";
+import { logout } from "../../redux/auth";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleLogOut = async () => {
-    dispatch(
-      setAuth({ username: null, role: "connect_user", accessToken: null })
-    );
-    try {
-      const response = await axios("user/sign_out", {
-        withCredentials: true,
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    dispatch(logout())
+      .unwrap()
+      .then(() => navigate("/sign_in"))
+      .catch((err) => console.log(err));
   };
   return (
     <div className="headerWrapper">

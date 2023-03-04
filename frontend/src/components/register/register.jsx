@@ -1,17 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
-import axios from "../../axios";
+import { useAppDispatch } from "../../redux/hooks";
+import { register } from "../../redux/auth";
 
 const USER_REGEX = /^[A-z0-9-_]{4,23}/;
 const PWD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
 const PHONE_REGEX = /^(\+\d{1,2}\s)\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
 const FULLNAME_REGEX = /^[A-Za-z-\s]{10,50}$/;
-const REGISTER_URL = "/user/sign_up";
 
 const Register = () => {
   const userRef = useRef();
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [user, setUser] = useState("");
@@ -24,15 +24,12 @@ const Register = () => {
 
   const [phone, setPhone] = useState("");
   const [validPhone, setValidPhone] = useState(false);
-  // const [phoneFocus, setPhoneFocus] = useState(false);
 
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
-  // const [pwdFocus, setPwdFocus] = useState(false);
 
   const [matchPwd, setMatchPwd] = useState("");
   const [validMatch, setValidMatch] = useState(false);
-  // const [matchFocus, setMatchFocus] = useState(false);
 
   const [errMsg, setErrMsg] = useState("");
 
@@ -59,28 +56,29 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd, matchPwd]);
+  }, [user, pwd, matchPwd, phone]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await axios.post(REGISTER_URL, {
+    dispatch(
+      register({
         username: user,
         password: pwd,
         full_name: fullName,
         phone_number: phone,
+      })
+    )
+      .unwrap()
+      .then(() => navigate("/sign_in"))
+      .catch((err) => {
+        if (!err?.response) setErrMsg("No server response");
+        else if (err?.response?.status === 409) {
+          if (err.response.data.detail.includes("phone_number"))
+            setErrMsg("phone number already taken!");
+          else if (err.response.data.detail.includes("username"))
+            setErrMsg("username already taken!");
+        } else setErrMsg("registration failed");
       });
-      navigate("/sign_in");
-    } catch (err) {
-      console.log(err);
-      if (!err?.response) setErrMsg("No server response");
-      else if (err?.response?.status === 409) {
-        if (err.response.data.detail.includes("phone_number"))
-          setErrMsg("phone number already taken!");
-        else if (err.response.data.detail.includes("username"))
-          setErrMsg("username already taken!");
-      } else setErrMsg("registration failed");
-    }
   };
 
   return (
@@ -163,8 +161,6 @@ const Register = () => {
                 autoComplete="off"
                 aria-invalid={validPhone ? "false" : "true"}
                 aria-describedby="confirmnote"
-                // onFocus={() => setPhoneFocus(true)}
-                // onBlur={() => setPhoneFocus(false)}
               />
               <label
                 htmlFor="phone"
@@ -188,8 +184,6 @@ const Register = () => {
                 required
                 aria-invalid={validPwd ? "false" : "true"}
                 aria-describedby="pwdnote"
-                // onFocus={() => setPwdFocus(true)}
-                // onBlur={() => setPwdFocus(false)}
               />
               <label
                 htmlFor="password"
@@ -214,8 +208,6 @@ const Register = () => {
                 required
                 aria-invalid={validMatch ? "false" : "true"}
                 aria-describedby="confirmnote"
-                // onFocus={() => setMatchFocus(true)}
-                // onBlur={() => setMatchFocus(false)}
               />
               <label
                 htmlFor="confirm_pwd"
