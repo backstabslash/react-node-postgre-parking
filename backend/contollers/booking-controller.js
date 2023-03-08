@@ -32,7 +32,9 @@ class BookingController {
 
   // get all bookings
   async getBookings(req, res) {
-    const allBookings = await db(req.body.role).query(`select * from Booking`);
+    const allBookings = await db(req.body.role).query(
+      `select * from booking_status order by booking_id`
+    );
     res.json(allBookings);
   }
 

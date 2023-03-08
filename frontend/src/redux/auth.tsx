@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
 import axios from "../axios";
 
 interface AuthState {
@@ -6,7 +7,7 @@ interface AuthState {
   accessToken: string | null;
   role: string | null;
   loading: boolean | null;
-  error: string | null;
+  error: number | null;
 }
 
 const initialState: AuthState = {
@@ -36,7 +37,12 @@ export const register = createAsyncThunk(
         phone_number: userData.phone_number,
       });
     } catch (err) {
-      return rejectWithValue(err);
+      console.log(err);
+      const error = err as AxiosError;
+      return rejectWithValue({
+        status: error.response?.status,
+        error: error.response?.data,
+      });
     }
   }
 );
@@ -56,7 +62,8 @@ export const login = createAsyncThunk(
       response.data.username = userData.username;
       return response.data;
     } catch (err) {
-      return rejectWithValue(err);
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
     }
   }
 );
@@ -70,7 +77,8 @@ export const refresh = createAsyncThunk(
       });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err);
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
     }
   }
 );
@@ -83,7 +91,8 @@ export const logout = createAsyncThunk(
         withCredentials: true,
       });
     } catch (err) {
-      return rejectWithValue(err);
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
     }
   }
 );
@@ -92,64 +101,66 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {},
-  extraReducers: {
-    // register
-    [`${register.pending}`]: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    [`${register.fulfilled}`]: (state) => {
-      state.loading = false;
-    },
-    [`${register.rejected}`]: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    // login
-    [`${login.pending}`]: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    [`${login.fulfilled}`]: (state, action) => {
-      state.loading = false;
-      const { username, role, accessToken } = action.payload;
-      state.username = username;
-      state.role = role;
-      state.accessToken = accessToken;
-    },
-    [`${login.rejected}`]: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    // logout
-    [`${logout.pending}`]: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    [`${logout.fulfilled}`]: (state) => {
-      state.loading = false;
-      state.username = state.role = state.accessToken = null;
-    },
-    [`${logout.rejected}`]: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    // refresh
-    [`${refresh.pending}`]: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    [`${refresh.fulfilled}`]: (state, action) => {
-      state.loading = false;
-      const { username, role, accessToken } = action.payload;
-      state.username = username;
-      state.role = role;
-      state.accessToken = accessToken;
-    },
-    [`${refresh.rejected}`]: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
+  extraReducers: (builder) => {
+    builder
+      // register
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        const { status } = action.payload as any;
+        state.error = status as number;
+      })
+      // login
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = false;
+        const { username, role, accessToken } = action.payload;
+        state.username = username;
+        state.role = role;
+        state.accessToken = accessToken;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      })
+      // logout
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.loading = false;
+        state.username = state.role = state.accessToken = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      })
+      // refresh
+      .addCase(refresh.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refresh.fulfilled, (state, action) => {
+        state.loading = false;
+        const { username, role, accessToken } = action.payload;
+        state.username = username;
+        state.role = role;
+        state.accessToken = accessToken;
+      })
+      .addCase(refresh.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      });
   },
 });
 

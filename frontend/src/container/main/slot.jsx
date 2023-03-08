@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react";
-import StateContext from "../../components/context/stateprovider";
+import React, { useState } from "react";
 import "./slot.css";
 import SlotModal from "./modals/slotmodal";
 import Booking from "./booking/booking";
+import { useAppSelector } from "../../redux/hooks";
 
 function Slot() {
   const [slot, setSlot] = useState({});
-  const { slots } = useContext(StateContext);
+  const slots = useAppSelector((state) => state.slot);
   const [openSlotModal, setOpenSlotModal] = useState(false);
   const [renderBookingSection, setRenderBookingSection] = useState(false);
   return (
@@ -28,12 +28,12 @@ function Slot() {
           setSlot={setSlot}
           setRenderBookingSection={setRenderBookingSection}
         />
-        {Object.keys(slots).length > 0 ? (
-          slots.map(({ slot_id, vehicle_category, price, status }) => (
+        {slots.slots.length > 0 ? (
+          slots.slots.map(({ slot_id, vehicle_category, price, status }) => (
             <>
               <div
                 className={`slots ${
-                  status === "Available" ? "" : "slots--taken"
+                  status === "available" ? "" : "slots--taken"
                 }`}
                 key={slot_id}
                 onClick={() => {
@@ -47,7 +47,7 @@ function Slot() {
                     : vehicle_category}
                 </div>
                 <div className="slot-text">
-                  {status === "Available" ? `a ${slot_id}` : `b ${slot_id}`}
+                  {status === "available" ? `a ${slot_id}` : `b ${slot_id}`}
                 </div>
               </div>
             </>

@@ -28,9 +28,8 @@ const Login = () => {
       .unwrap()
       .then(() => navigate("/"))
       .catch((err) => {
-        if (!err?.response) setErrMsg("no server response");
-        else if (err.response?.status === 401)
-          setErrMsg("such user does not exist");
+        if (!err) setErrMsg("no server response");
+        else if (err === 401) setErrMsg("such user does not exist");
         else setErrMsg("login failed");
       });
   };

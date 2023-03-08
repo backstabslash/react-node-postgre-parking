@@ -8,7 +8,6 @@ import { useAppSelector } from "../../../redux/hooks";
 const Booking = ({ slot, setRenderBookingSection }) => {
   const { vehicles } = useContext(StateContext);
   const auth = useAppSelector((state) => state.auth);
-  console.log(auth);
   const [properVehicles, setProperVehicles] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -25,7 +24,8 @@ const Booking = ({ slot, setRenderBookingSection }) => {
     }
     setProperVehicles(arr);
     setSelectedOption(null);
-    if (slot.status === "Busy") setIsDisabled(true);
+    if (slot.status === "occupied" || slot.status === "reserved")
+      setIsDisabled(true);
     else setIsDisabled(false);
   }, [slot]);
 
@@ -50,12 +50,20 @@ const Booking = ({ slot, setRenderBookingSection }) => {
       <div className="stats">
         <div className="statContainer">
           <div
-            className={`statProp ${slot.status === "Busy" ? "busySlot" : ""}`}
+            className={`statProp ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
           >
             {slot.slot_id}
           </div>
           <div
-            className={`statLabel ${slot.status === "Busy" ? "busySlot" : ""}`}
+            className={`statLabel ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
           >
             ID
           </div>
@@ -66,12 +74,20 @@ const Booking = ({ slot, setRenderBookingSection }) => {
         </div>
         <div className="statContainer">
           <div
-            className={`statProp ${slot.status === "Busy" ? "busySlot" : ""}`}
+            className={`statProp ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
           >
             {slot.status.toLowerCase()}
           </div>
           <div
-            className={`statLabel ${slot.status === "Busy" ? "busySlot" : ""}`}
+            className={`statLabel ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
           >
             status
           </div>
@@ -83,7 +99,11 @@ const Booking = ({ slot, setRenderBookingSection }) => {
       </div>
       <div className="userInfo">
         <div
-          className={`userLabel ${slot.status === "Busy" ? "busySlot" : ""}`}
+          className={`userLabel ${
+            slot.status === "occupied" || slot.status === "reserved"
+              ? "busySlot"
+              : ""
+          }`}
         >
           vehicle
         </div>

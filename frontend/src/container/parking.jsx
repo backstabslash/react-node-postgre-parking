@@ -4,27 +4,21 @@ import Header from "./header/header";
 import Slot from "./main/slot";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import StateContext from "../components/context/stateprovider";
-import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "../axios";
+import { getBookings } from "../redux/booking";
+import { getSlots } from "../redux/slot";
+import { useAppDispatch } from "../redux/hooks";
 
 const Parking = () => {
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { setVehicles, setDiscounts } = useContext(StateContext);
 
-  const { setSlots, setVehicles, setBookings, setDiscounts } =
-    useContext(StateContext);
   useEffect(() => {
     let isMounted = true;
-    axios
-      .get("/user/slots", {})
-      .then(
-        (res) =>
-          isMounted &&
-          setSlots(res.data.rows.sort((a, b) => a.slot_id - b.slot_id))
-      )
-      .catch((err) => console.log(err));
+    dispatch(getBookings());
+    dispatch(getSlots());
     if (auth.role) {
       const getVehicles = async () => {
         try {
@@ -35,19 +29,7 @@ const Parking = () => {
           isMounted && setVehicles(response.data.rows);
         } catch (err) {
           console.error(err);
-          navigate("/sign_in", { replace: true });
-        }
-      };
-      const getBookings = async () => {
-        try {
-          const response = await axiosPrivate.get(
-            `/booking/username/${encodeURIComponent(auth.username)}`,
-            {}
-          );
-          isMounted && setBookings(response.data.rows);
-        } catch (err) {
-          console.error(err);
-          navigate("/sign_in", { replace: true });
+          // navigate("/sign_in", { replace: true });
         }
       };
       const getDiscounts = async () => {
@@ -59,11 +41,10 @@ const Parking = () => {
           isMounted && setDiscounts(response.data.rows);
         } catch (err) {
           console.error(err);
-          navigate("/sign_in", { replace: true });
+          // navigate("/sign_in", { replace: true });
         }
       };
       getVehicles();
-      getBookings();
       getDiscounts();
     }
 

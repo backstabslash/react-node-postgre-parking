@@ -10,7 +10,7 @@ const useRefreshToken = (): (() => Promise<string | null>) => {
       .then((token) => {
         accessToken = token.accessToken;
       })
-      .catch((err) => console.log(err));
+      .catch((err) => err);
     return accessToken;
   };
   return refreshToken;

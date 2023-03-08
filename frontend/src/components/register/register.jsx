@@ -71,11 +71,12 @@ const Register = () => {
       .unwrap()
       .then(() => navigate("/sign_in"))
       .catch((err) => {
-        if (!err?.response) setErrMsg("No server response");
-        else if (err?.response?.status === 409) {
-          if (err.response.data.detail.includes("phone_number"))
+        const { status, error } = err;
+        if (!status) setErrMsg("No server response");
+        else if (status === 409) {
+          if (error.error.includes("phone_number"))
             setErrMsg("phone number already taken!");
-          else if (err.response.data.detail.includes("username"))
+          else if (error.error.includes("username"))
             setErrMsg("username already taken!");
         } else setErrMsg("registration failed");
       });

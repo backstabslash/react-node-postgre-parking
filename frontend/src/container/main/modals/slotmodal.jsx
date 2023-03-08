@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import StateContext from "../../../components/context/stateprovider";
+import React from "react";
 import "./slotmodal.scss";
 import { useAppSelector } from "../../../redux/hooks";
 
@@ -10,8 +9,9 @@ const SlotModal = ({
   setRenderBookingSection,
   setSlot,
 }) => {
-  const { slots } = useContext(StateContext);
+  const slots = useAppSelector((state) => state.slot);
   const auth = useAppSelector((state) => state.auth);
+  const bookings = useAppSelector((state) => state.booking);
   return (
     <div
       className={`overlay animated ${openSlotModal ? "show" : ""}`}
@@ -23,7 +23,7 @@ const SlotModal = ({
             slot n{" "}
             <span
               className={`slot-chars-text ${
-                slot.status === "Available" ? "" : "slot--taken"
+                slot.status === "available" ? "" : "slot--taken"
               }`}
             >
               {slot.slot_id}
@@ -49,20 +49,48 @@ const SlotModal = ({
           currently :{" "}
           <span
             className={`slot-chars-text ${
-              slot.status === "Available" ? "" : "slot--taken"
+              slot.status === "available" ? "" : "slot--taken"
             }`}
           >
             {" "}
             {slot.status?.toLowerCase()}
           </span>
+          <br></br>
+          {slot.status !== "available" ? (
+            <>
+              until:{" "}
+              <span
+                className={`slot-chars-text ${
+                  slot.status === "available" ? "" : "slot--taken"
+                }`}
+              >
+                {bookings.bookings.length > 0
+                  ? bookings.bookings.map((booking) => {
+                      if (
+                        booking.slot_id === slot.slot_id &&
+                        Date.parse(booking.end_date) > Date.now() // >= ?
+                      )
+                        return booking.end_date.substring(0, 10);
+                      return null;
+                    })
+                  : null}
+              </span>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="btnWrapper">
           <button
             className="btn"
             onClick={() => {
               slot.slot_id === "1"
-                ? setSlot(slots[slots.length - 1])
-                : setSlot(slots[(parseInt(slot.slot_id) - 2) % slots.length]);
+                ? setSlot(slots.slots[slots.slots.length - 1])
+                : setSlot(
+                    slots.slots[
+                      (parseInt(slot.slot_id) - 2) % slots.slots.length
+                    ]
+                  );
             }}
           >
             prev
@@ -84,7 +112,7 @@ const SlotModal = ({
           <button
             className="btn"
             onClick={() => {
-              setSlot(slots[slot.slot_id % slots.length]);
+              setSlot(slots.slots[slot.slot_id % slots.slots.length]);
             }}
           >
             next

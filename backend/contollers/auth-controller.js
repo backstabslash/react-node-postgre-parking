@@ -14,8 +14,10 @@ class AuthController {
       );
     } catch (err) {
       newUser = db("connect_user").query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
-      if (err.code == 23505) return res.status(409).json(err); // duplicate
-      else return res.status(400).json(err); // bad request
+      if (err.code == 23505)
+        return res.status(409).json({ error: `${err.detail}` });
+      // duplicate
+      else return res.status(400).json({ error: "bad request" }); // bad request
     }
     res.status(201).json(newUser);
   }
@@ -26,7 +28,10 @@ class AuthController {
       const { username, password } = req.body;
       const foundUser = await db("connect_user").query(
         `select category from Users where Users.username = $1 and Users.password = $2`,
-        [username, sha256(password)]
+        [
+          username,
+          password, //sha256(password)
+        ]
       );
       if (!foundUser.rowCount) throw "no such user yet";
       // if select returned nothing then throw error
@@ -47,7 +52,7 @@ class AuthController {
       res.json({ accessToken, role: foundUser.rows[0].category });
     } catch (err) {
       console.log(err);
-      return res.status(401).json(err); // unauthorized
+      return res.status(401).json({ error: "invalid username or password" }); // unauthorized
     }
   }
 
@@ -87,12 +92,20 @@ class AuthController {
     );
   }
 
-  // guest needs it too
+  // guest slots
   async getParkingSlots(req, res) {
     const allSlots = await db("connect_user").query(
-      `select * from Parking_Slot`
+      `select * from slot_status order by slot_id`
     );
     res.json(allSlots);
+  }
+
+  // guest bookings
+  async getBookings(req, res) {
+    const allBookings = await db("connect_user").query(
+      `select start_date, end_date, slot_id from booking_status where status = 'ongoing' or status = 'reserved'`
+    );
+    res.json(allBookings);
   }
 }
 

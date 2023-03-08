@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+import axios, { axiosPrivate } from "../axios";
 
 interface BookingState {
   booking_id: number | null;
@@ -12,49 +14,71 @@ interface BookingState {
   remarks: string | null;
 }
 
+interface GuestBookingState {
+  slot_id: number | null;
+  start_date: Date | null;
+  end_date: Date | null;
+}
+
 interface BookingsState {
-  bookings: Array<Object>;
+  bookings: (BookingState | GuestBookingState)[] | null;
+  loading: boolean | null;
+  error: number | null;
 }
 
 const initialState: BookingsState = {
   bookings: [],
+  loading: false,
+  error: null,
 };
+
+export const getBookings = createAsyncThunk(
+  "booking/bookings",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as any;
+      if (state.auth?.role && state.auth?.role === "connect_user") {
+        const response = await axios.get("/user/bookings");
+        return response.data.rows;
+      } else {
+        const response = await axiosPrivate.get("/booking/bookings");
+        return response.data.rows;
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
 
 export const bookingSlice = createSlice({
   name: "booking",
   initialState,
-  reducers: {
-    setBookings: (state, action: PayloadAction<BookingState>) => {
-      const {
-        booking_id,
-        vehicle_id,
-        slot_id,
-        start_date,
-        end_date,
-        status,
-        amount_due,
-        amount_paid,
-        remarks,
-      } = action.payload;
-      const newBooking = {
-        booking_id,
-        vehicle_id,
-        slot_id,
-        start_date,
-        end_date,
-        status,
-        amount_due,
-        amount_paid,
-        remarks,
-      };
-      return {
-        ...state,
-        bookings: [...state.bookings, newBooking],
-      };
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // getBookings
+      .addCase(getBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        let bookings: (BookingState | GuestBookingState)[] = [];
+        for (let booking of action.payload) {
+          booking.start_date = booking.start_date.substring(0, 10);
+          booking.end_date = booking.end_date.substring(0, 10);
+          bookings.push(booking);
+        }
+        state.bookings = bookings;
+      })
+      .addCase(getBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      });
   },
 });
 
-export const { setBookings } = bookingSlice.actions;
+export const {} = bookingSlice.actions;
 
 export default bookingSlice.reducer;
