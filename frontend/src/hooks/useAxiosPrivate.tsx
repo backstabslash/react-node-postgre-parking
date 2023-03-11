@@ -6,6 +6,7 @@ import { useAppSelector } from "../redux/hooks";
 
 const useAxiosPrivate = (): AxiosInstance => {
   const auth = useAppSelector((state) => state.auth);
+
   const refresh = useRefreshToken();
 
   useEffect(() => {

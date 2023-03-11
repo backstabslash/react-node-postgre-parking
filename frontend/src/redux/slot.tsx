@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
-import axios, { axiosPrivate } from "../axios";
+import { AxiosError, AxiosInstance } from "axios";
+import axios from "../axios";
 
 interface SlotState {
   slot_id: number | null;
@@ -23,14 +23,14 @@ const initialState: SlotsState = {
 
 export const getSlots = createAsyncThunk(
   "slot/slots",
-  async (_, { rejectWithValue, getState }) => {
+  async (axiosPrivate: AxiosInstance, { rejectWithValue, getState }) => {
     try {
       const state = getState() as any;
       if (state.auth?.role && state.auth?.role === "connect_user") {
         const response = await axios.get("/user/slots");
         return response.data.rows;
       } else {
-        const response = await axiosPrivate.get("/parking/parkingslots");
+        const response = await axiosPrivate.get(`/parking/parkingslots`, {});
         return response.data.rows;
       }
     } catch (err) {
@@ -41,7 +41,7 @@ export const getSlots = createAsyncThunk(
 );
 
 export const slotSlice = createSlice({
-  name: "booking",
+  name: "slot",
   initialState,
   reducers: {},
   extraReducers: (builder) => {

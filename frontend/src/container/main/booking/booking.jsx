@@ -1,28 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
-import StateContext from "../../../components/context/stateprovider";
+import React, { useState, useEffect } from "react";
 import "./booking.css";
 import { selectStyles } from "./selectProps";
 import Select from "react-select";
-import { useAppSelector } from "../../../redux/hooks";
+import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
+import { updateVehiclesForBooking } from "../../../redux/vehicle";
 
 const Booking = ({ slot, setRenderBookingSection }) => {
-  const { vehicles } = useContext(StateContext);
+  const vehicles = useAppSelector((state) => state.vehicle);
   const auth = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+
   const [properVehicles, setProperVehicles] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
-    let arr = [...vehicles];
-    for (let vehicle of vehicles) {
-      if (vehicle.vehicle_category !== slot.vehicle_category)
-        vehicle.isDisabled = true;
-      else vehicle.isDisabled = false;
-      vehicle.label =
-        vehicle.value = `${vehicle.brand.toLowerCase()} ${vehicle.plate_number.toLowerCase()}`;
-    }
-    setProperVehicles(arr);
+    const updatedVehicles = vehicles.vehicles.map((vehicle) => {
+      const isDisabled = vehicle.vehicle_category !== slot.vehicle_category,
+        label = `${vehicle.brand.toLowerCase()} ${vehicle.plate_number.toLowerCase()}`,
+        value = `${vehicle.brand.toLowerCase()} ${vehicle.plate_number.toLowerCase()}`;
+      return { ...vehicle, isDisabled, label, value };
+    });
+    dispatch(updateVehiclesForBooking(updatedVehicles));
+    setProperVehicles(updatedVehicles);
     setSelectedOption(null);
     if (slot.status === "occupied" || slot.status === "reserved")
       setIsDisabled(true);

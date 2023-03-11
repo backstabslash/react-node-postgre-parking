@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
-import axios, { axiosPrivate } from "../axios";
+import { AxiosError, AxiosInstance } from "axios";
+import axios from "../axios";
 
 interface BookingState {
   booking_id: number | null;
@@ -21,29 +21,42 @@ interface GuestBookingState {
 }
 
 interface BookingsState {
-  bookings: (BookingState | GuestBookingState)[] | null;
+  guestBookings: GuestBookingState[] | null;
+  bookings: BookingState[] | null;
   loading: boolean | null;
   error: number | null;
 }
 
 const initialState: BookingsState = {
+  guestBookings: [],
   bookings: [],
   loading: false,
   error: null,
 };
 
-export const getBookings = createAsyncThunk(
-  "booking/bookings",
-  async (_, { rejectWithValue, getState }) => {
+export const getGuestBookings = createAsyncThunk(
+  "booking/guestbookings",
+  async (_, { rejectWithValue }) => {
     try {
-      const state = getState() as any;
-      if (state.auth?.role && state.auth?.role === "connect_user") {
-        const response = await axios.get("/user/bookings");
-        return response.data.rows;
-      } else {
-        const response = await axiosPrivate.get("/booking/bookings");
-        return response.data.rows;
-      }
+      const response = await axios.get("/user/bookings");
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
+export const getClientBookings = createAsyncThunk(
+  "booking/clientbookings",
+  async (axiosPrivate: AxiosInstance, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    try {
+      const response = await axiosPrivate.get(
+        `/booking/username/${encodeURIComponent(state.auth.username)}`,
+        {}
+      );
+      return response.data.rows;
     } catch (err) {
       const error = err as AxiosError;
       return rejectWithValue(error.response?.status);
@@ -57,22 +70,22 @@ export const bookingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // getBookings
-      .addCase(getBookings.pending, (state) => {
+      // getGuestBookings
+      .addCase(getGuestBookings.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getBookings.fulfilled, (state, action) => {
+      .addCase(getGuestBookings.fulfilled, (state, action) => {
         state.loading = false;
-        let bookings: (BookingState | GuestBookingState)[] = [];
+        let guestBookings: GuestBookingState[] = [];
         for (let booking of action.payload) {
           booking.start_date = booking.start_date.substring(0, 10);
           booking.end_date = booking.end_date.substring(0, 10);
-          bookings.push(booking);
+          guestBookings.push(booking);
         }
-        state.bookings = bookings;
+        state.guestBookings = guestBookings;
       })
-      .addCase(getBookings.rejected, (state, action) => {
+      .addCase(getGuestBookings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as number;
       });

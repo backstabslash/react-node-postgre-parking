@@ -64,8 +64,8 @@ const SlotModal = ({
                   slot.status === "available" ? "" : "slot--taken"
                 }`}
               >
-                {bookings.bookings.length > 0
-                  ? bookings.bookings.map((booking) => {
+                {bookings.guestBookings.length > 0
+                  ? bookings.guestBookings.map((booking) => {
                       if (
                         booking.slot_id === slot.slot_id &&
                         Date.parse(booking.end_date) > Date.now() // >= ?

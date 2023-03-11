@@ -1,56 +1,27 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import "./parking.css";
 import Header from "./header/header";
 import Slot from "./main/slot";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import StateContext from "../components/context/stateprovider";
 import { useSelector } from "react-redux";
-import { getBookings } from "../redux/booking";
+import { getGuestBookings, getClientBookings } from "../redux/booking";
 import { getSlots } from "../redux/slot";
 import { useAppDispatch } from "../redux/hooks";
+import { getVehiclesByUsername } from "../redux/vehicle";
+import { getDiscountsByUsername } from "../redux/discount";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Parking = () => {
-  const axiosPrivate = useAxiosPrivate();
   const auth = useSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const { setVehicles, setDiscounts } = useContext(StateContext);
-
+  const axiosPrivate = useAxiosPrivate();
   useEffect(() => {
-    let isMounted = true;
-    dispatch(getBookings());
-    dispatch(getSlots());
-    if (auth.role) {
-      const getVehicles = async () => {
-        try {
-          const response = await axiosPrivate.get(
-            `/vehicle/username/${encodeURIComponent(auth.username)}`,
-            {}
-          );
-          isMounted && setVehicles(response.data.rows);
-        } catch (err) {
-          console.error(err);
-          // navigate("/sign_in", { replace: true });
-        }
-      };
-      const getDiscounts = async () => {
-        try {
-          const response = await axiosPrivate.get(
-            `/discount/username/${encodeURIComponent(auth.username)}`,
-            {}
-          );
-          isMounted && setDiscounts(response.data.rows);
-        } catch (err) {
-          console.error(err);
-          // navigate("/sign_in", { replace: true });
-        }
-      };
-      getVehicles();
-      getDiscounts();
+    dispatch(getGuestBookings(axiosPrivate));
+    dispatch(getSlots(axiosPrivate));
+    if (auth.role !== "connect_user") {
+      dispatch(getClientBookings(axiosPrivate));
+      dispatch(getVehiclesByUsername(axiosPrivate));
+      dispatch(getDiscountsByUsername(axiosPrivate));
     }
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return (
