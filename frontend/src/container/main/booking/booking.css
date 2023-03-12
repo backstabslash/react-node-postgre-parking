@@ -7,8 +7,8 @@
   top: 40px;
   overflow-wrap: break-word;
   width: 80%;
-  background-color: rgba(22, 22, 23, 0.8);
-  border: 1px solid rgba(3, 129, 254, 0.8);
+  background-color: var(--black8);
+  border: 1px solid var(--blue8);
   margin-top: 10px;
 }
 
@@ -17,13 +17,13 @@
   width: 100%;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid rgba(3, 129, 254, 0.8);
+  border-bottom: 1px solid var(--blue8);
 }
 
 .statContainer {
   flex: 1;
   font-family: "Lora";
-  color: rgba(3, 129, 254, 0.8);
+  color: var(--blue8);
   font-weight: 700;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .busySlot {
-  color: rgba(247, 111, 104, 0.8);
+  color: var(--red8);
 }
 
 .buttonsContainer {
@@ -59,34 +59,101 @@
 .closeBookingBtn {
   width: 70px;
   padding: 0.5rem;
-  background-color: rgba(247, 111, 104, 0.8);
-  border-color: rgba(247, 111, 104, 0.8);
-  border: 1px solid rgba(247, 111, 104, 0.8);
-  color: rgba(22, 22, 23);
+  background-color: var(--blue8);
+  border-color: var(--blue8);
+  border: 1px solid var(--blue8);
+  font-family: "Lora";
+  color: var(--black8);
   cursor: pointer;
-  border-radius: 20px;
   font-weight: bold;
+  border-radius: 20px;
+  margin: 0 5px 0 5px;
   user-select: none;
 }
 
-.closeBookingBtn:hover {
-  box-shadow: 0 0 2px 1px rgba(247, 111, 104, 0.8);
+.closeBookingBtn:active {
+  border: 1px solid var(--black);
 }
 
 .userInfo {
   display: flex;
   width: 100%;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  border-bottom: 1px solid rgba(3, 129, 254, 0.8);
+  border-bottom: 1px solid var(--blue8);
   font-family: "Lora";
-  color: rgba(3, 129, 254, 0.8);
+  color: var(--blue8);
   font-weight: 700;
+}
+
+.columnInfo {
+  display: flex;
+  flex-direction: column;
+  margin: 0 5px 0 5px;
 }
 
 .userLabel {
   font-size: 12px;
   font-weight: 400;
+  align-self: center;
   padding-top: 5px;
+}
+
+.bookingInputContainer > input {
+  outline: 0;
+  padding: 0;
+  margin: 4px 0 6px 0;
+  width: 10ch;
+  height: 36px;
+  color: var(--blue8);
+  border: none;
+  border-bottom: 1px solid var(--blue8);
+  background-color: transparent;
+  box-sizing: border-box;
+  font-family: "Lora";
+  font-weight: 700;
+  text-align: center;
+  font-size: 16px;
+}
+
+.bookingInputContainer > input::placeholder {
+  color: var(--blue8);
+  opacity: 1;
+}
+
+.bookingInputContainer > input:focus {
+  outline: 0;
+  padding: 0;
+  vertical-align: baseline;
+  font-family: "Lora";
+  font-weight: 700;
+  color: var(--blue8);
+}
+
+.bookingInputContainerBusy > input {
+  color: var(--red8);
+  border-bottom: 1px solid var(--red8);
+}
+
+.bookingInputContainerBusy > input::placeholder {
+  color: var(--red8);
+}
+
+.bookingPriceConatainer {
+  margin: 4px 0 6px 0;
+  width: 10ch;
+  height: 36px;
+  color: var(--blue8);
+  border-bottom: 1px solid var(--blue8);
+  font-family: "Lora";
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.busyPriceContainer {
+  color: var(--red8);
+  border-bottom: 1px solid var(--red8);
 }

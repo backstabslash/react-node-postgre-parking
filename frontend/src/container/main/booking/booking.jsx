@@ -4,16 +4,23 @@ import { selectStyles } from "./selectProps";
 import Select from "react-select";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { updateVehiclesForBooking } from "../../../redux/vehicle";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { postBooking } from "../../../redux/booking";
 
 const Booking = ({ slot, setRenderBookingSection }) => {
   const vehicles = useAppSelector((state) => state.vehicle);
   const auth = useAppSelector((state) => state.auth);
+  const bookings = useAppSelector((state) => state.booking);
   const dispatch = useAppDispatch();
+  const axiosPrivate = useAxiosPrivate();
 
   const [properVehicles, setProperVehicles] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     const updatedVehicles = vehicles.vehicles.map((vehicle) => {
@@ -25,6 +32,9 @@ const Booking = ({ slot, setRenderBookingSection }) => {
     dispatch(updateVehiclesForBooking(updatedVehicles));
     setProperVehicles(updatedVehicles);
     setSelectedOption(null);
+    setStartDate("");
+    setEndDate("");
+    setTotalPrice("0");
     if (slot.status === "occupied" || slot.status === "reserved")
       setIsDisabled(true);
     else setIsDisabled(false);
@@ -33,6 +43,15 @@ const Booking = ({ slot, setRenderBookingSection }) => {
   useEffect(() => {
     if (auth.role === "connect_user" || null) setRenderBookingSection(false);
   }, [auth]);
+
+  useEffect(() => {
+    if (startDate.length === 10 && endDate.length === 10) {
+      const total =
+        ((Date.parse(endDate) - Date.parse(startDate)) / 86400000) * slot.price;
+      if (total > 0) setTotalPrice(total);
+      else setTotalPrice(0);
+    }
+  }, [startDate, endDate]);
 
   const handleSelectChange = (selectedOption) => {
     setSelectedOption(selectedOption);
@@ -44,6 +63,44 @@ const Booking = ({ slot, setRenderBookingSection }) => {
 
   const handleBlur = () => {
     setIsFocused(false);
+  };
+
+  const onChangeStartDate = (e) => {
+    const re = /^[0-9-]+$/;
+    if (e.target.value >= "" || re.test(startDate + e.target.value))
+      setStartDate(e.target.value);
+  };
+
+  const onChangeEndDate = (e) => {
+    const re = /^[0-9-]+$/;
+    if (e.target.value === "" || re.test(startDate + e.target.value))
+      setEndDate(e.target.value);
+  };
+
+  const handleNewBooking = (e) => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (
+      selectedOption !== null &&
+      regex.test(startDate) &&
+      regex.test(endDate) &&
+      Date.parse(endDate) > Date.parse(startDate) &&
+      Date.parse(startDate) > Date.now()
+    ) {
+      const vehicle_id = selectedOption.vehicle_id,
+        slot_id = slot.slot_id;
+      dispatch(
+        postBooking({
+          axiosPrivate,
+          start_date: startDate,
+          end_date: endDate,
+          vehicle_id,
+          slot_id,
+          amount_due: totalPrice,
+        })
+      )
+        .unwrap()
+        .then((e) => console.log(e));
+    }
   };
 
   return (
@@ -99,27 +156,134 @@ const Booking = ({ slot, setRenderBookingSection }) => {
         </div>
       </div>
       <div className="userInfo">
-        <div
-          className={`userLabel ${
-            slot.status === "occupied" || slot.status === "reserved"
-              ? "busySlot"
-              : ""
-          }`}
-        >
-          vehicle
+        <div className="columnInfo">
+          <div
+            className={`userLabel ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
+          >
+            vehicle
+          </div>
+          <Select
+            onChange={handleSelectChange}
+            isDisabled={isDisabled}
+            isFocused={isFocused}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            isSearchable={false}
+            options={properVehicles}
+            placeholder="select"
+            styles={selectStyles}
+            value={selectedOption}
+          />
         </div>
-        <Select
-          onChange={handleSelectChange}
-          isDisabled={isDisabled}
-          isFocused={isFocused}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          isSearchable={false}
-          options={properVehicles}
-          placeholder="select"
-          styles={selectStyles}
-          value={selectedOption}
-        />
+        <div className="columnInfo">
+          <div
+            className={`userLabel ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
+          >
+            start date
+          </div>
+          <div
+            className={`bookingInputContainer ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "bookingInputContainerBusy"
+                : ""
+            }`}
+          >
+            <input
+              type="text"
+              id="username"
+              autoComplete="off"
+              value={startDate}
+              placeholder="yyyy-mm-dd"
+              onChange={onChangeStartDate}
+              disabled={
+                slot.status === "occupied" || slot.status === "reserved"
+              }
+              required
+            />
+          </div>
+        </div>
+        <div className="columnInfo">
+          <div
+            className={`userLabel ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "busySlot"
+                : ""
+            }`}
+          >
+            end date
+          </div>
+          <div
+            className={`bookingInputContainer ${
+              slot.status === "occupied" || slot.status === "reserved"
+                ? "bookingInputContainerBusy"
+                : ""
+            }`}
+          >
+            <input
+              type="text"
+              id="username"
+              autoComplete="off"
+              value={endDate}
+              placeholder="yyyy-mm-dd"
+              onChange={onChangeEndDate}
+              disabled={
+                slot.status === "occupied" || slot.status === "reserved"
+              }
+              required
+            />
+          </div>
+        </div>
+        {slot.status === "available" ? (
+          <div className="columnInfo">
+            <div className={`userLabel `}>total price</div>
+            <div className={`bookingPriceConatainer`}>
+              {isNaN(totalPrice) ? 0 : totalPrice}₴
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        {slot.status === "occupied" || slot.status === "reserved" ? (
+          <div className="columnInfo">
+            <div
+              className={`userLabel ${
+                slot.status === "occupied" || slot.status === "reserved"
+                  ? "busySlot"
+                  : ""
+              }`}
+            >
+              occupied until
+            </div>
+            <div
+              className={`bookingPriceConatainer ${
+                slot.status === "occupied" || slot.status === "reserved"
+                  ? "busyPriceContainer"
+                  : ""
+              }`}
+            >
+              {bookings.guestBookings.length > 0
+                ? bookings.guestBookings.map((booking) => {
+                    if (
+                      booking.slot_id === slot.slot_id &&
+                      Date.parse(booking.end_date) > Date.now() // >= ?
+                    )
+                      return booking.end_date.substring(0, 10);
+                    return null;
+                  })
+                : null}
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="buttonsContainer">
         <button
@@ -127,6 +291,9 @@ const Booking = ({ slot, setRenderBookingSection }) => {
           onClick={() => setRenderBookingSection(false)}
         >
           close
+        </button>
+        <button className="closeBookingBtn" onClick={handleNewBooking}>
+          book
         </button>
       </div>
     </div>

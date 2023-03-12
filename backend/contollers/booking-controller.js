@@ -8,13 +8,13 @@ class BookingController {
       slot_id,
       start_date,
       end_date,
-      status,
+      status = "ongoing",
       amount_due,
-      amount_paid,
-      remarks,
+      amount_paid = 0,
+      remarks = "",
     } = req.body;
     const newBooking = await db(req.body.role).query(
-      `insert into Parking_Slot (vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks) values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      `insert into Booking (vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks) values ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [
         vehicle_id,
         slot_id,

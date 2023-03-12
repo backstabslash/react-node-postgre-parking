@@ -37,12 +37,12 @@
 }
 
 .submitBtn:active {
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--white);
 }
 
 .formName {
   text-align: center;
-  color: #e5e5e5;
+  color: var(--white);
 }
 
 .sectionReg {

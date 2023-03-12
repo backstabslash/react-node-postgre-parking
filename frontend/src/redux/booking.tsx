@@ -64,6 +64,43 @@ export const getClientBookings = createAsyncThunk(
   }
 );
 
+export const postBooking = createAsyncThunk(
+  "booking/postbooking",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      start_date: Date;
+      end_date: Date;
+      vehicle_id: number;
+      slot_id: number;
+      amount_due: number;
+    },
+    { rejectWithValue }
+  ) => {
+    const {
+      axiosPrivate,
+      start_date,
+      end_date,
+      vehicle_id,
+      amount_due,
+      slot_id,
+    } = data;
+    try {
+      const response = await axiosPrivate.post("/booking/booking", {
+        start_date,
+        end_date,
+        vehicle_id,
+        amount_due,
+        slot_id,
+      });
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
 export const bookingSlice = createSlice({
   name: "booking",
   initialState,

@@ -103,7 +103,7 @@ class AuthController {
   // guest bookings
   async getBookings(req, res) {
     const allBookings = await db("connect_user").query(
-      `select start_date, end_date, slot_id from booking_status where status = 'ongoing' or status = 'reserved'`
+      `select start_date, end_date, slot_id from booking_status where status = 'ongoing' or status = 'upcoming'`
     );
     res.json(allBookings);
   }
