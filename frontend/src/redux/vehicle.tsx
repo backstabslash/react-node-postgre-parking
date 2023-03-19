@@ -7,8 +7,6 @@ interface VehicleState {
   vehicle_category: string | null;
   plate_number: string | null;
   brand: string | null;
-  value?: string | null;
-  label?: string | null;
   isDisabled?: boolean | null;
 }
 
@@ -57,11 +55,7 @@ export const getVehiclesByUsername = createAsyncThunk(
 export const vehicleSlice = createSlice({
   name: "vehicle",
   initialState,
-  reducers: {
-    updateVehiclesForBooking: (state, action) => {
-      state.vehicles = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // getVehicles
@@ -95,6 +89,6 @@ export const vehicleSlice = createSlice({
   },
 });
 
-export const { updateVehiclesForBooking } = vehicleSlice.actions;
+export const {} = vehicleSlice.actions;
 
 export default vehicleSlice.reducer;

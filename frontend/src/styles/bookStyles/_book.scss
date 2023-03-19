@@ -1,0 +1,441 @@
+@use "../global" as *;
+
+.book-section {
+  position: relative;
+  background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
+}
+
+.book-content {
+  margin: 0 auto;
+  margin-bottom: 10rem;
+
+  &__box {
+    background-color: $bg-white;
+    width: 100%;
+    padding: 4rem 4.5rem 5rem 5.5rem;
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 10%);
+    height: auto;
+    position: relative;
+    z-index: 4;
+    color: $bg-white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    color: $text-black;
+
+    h2 {
+      font-size: $h3-size;
+      font-weight: 700;
+      font-family: $text-font;
+      margin-bottom: 2.7rem;
+    }
+
+    .box-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 2rem;
+
+      b {
+        color: $text-blue;
+      }
+
+      @media (max-width: 630px) {
+        grid-template-columns: 1fr;
+      }
+
+      &__car-type {
+        display: flex;
+        flex-direction: column;
+
+        label {
+          font-size: $p-size;
+          font-weight: 600;
+          margin-bottom: 1.2rem;
+          font-family: $text-font;
+
+          i {
+            color: $text-blue;
+          }
+        }
+
+        select {
+          font-size: 1.5rem;
+          color: #878585;
+          font-family: $text-font;
+          border: 1px solid #ccd7e6;
+          border-radius: 3px;
+          font-weight: 400;
+          padding: 1.2rem 1.3rem;
+          outline: none;
+        }
+      }
+
+      &__car-time {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        input {
+          outline: none;
+          color: #878585;
+          padding-right: 3rem;
+          border: 1px solid #ccd7e6;
+        }
+
+        label {
+          font-size: 1.6rem;
+          font-weight: 600;
+          margin-bottom: 1.2rem;
+
+          i {
+            color: $text-blue;
+          }
+        }
+
+        ::-webkit-datetime-edit {
+          padding: 1.3rem 1.3rem;
+        }
+
+        ::-webkit-calendar-picker-indicator {
+          cursor: pointer;
+          font-size: 1.6rem;
+        }
+      }
+    }
+
+    button {
+      padding: 1.3rem 1.3rem;
+      height: fit-content;
+      align-self: self-end;
+      font-family: $text-font;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: $bg-white;
+      background-color: $text-blue;
+      box-shadow: 0 10px 15px 0 rgb(3 129 245 / 35%);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+
+      &:hover {
+        box-shadow: 0 10px 15px 0 rgb(3 129 245 / 60%);
+        background-color: #0066d6;
+      }
+    }
+  }
+}
+
+.error-message-empty,
+.error-message-dates {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  padding: 1rem 1.4rem;
+  margin-bottom: 1.8rem;
+  margin-top: -1rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  font-size: $p-size;
+  font-weight: 500;
+  font-family: $titles-font;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  i {
+    cursor: pointer;
+  }
+}
+
+.booking-done {
+  color: #2a6817;
+  background-color: #c3fabe;
+  border-color: #f5c6cb;
+  padding: 1rem 1.4rem;
+  margin-bottom: 1.8rem;
+  margin-top: -1rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  font-size: $p-size;
+  font-weight: 500;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  i {
+    cursor: pointer;
+  }
+}
+
+// modal
+
+.active-modal {
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+.modal-overlay {
+  opacity: 0;
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  top: 0;
+  right: 0;
+}
+
+.booking-modal {
+  opacity: 0;
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  z-index: 9999;
+  top: 49%;
+  left: 50%;
+  border-radius: 5px;
+  transform: translate(-50%, -50%);
+  width: 80rem;
+  max-height: calc(100vh - 60px);
+  overflow-y: scroll;
+  box-sizing: border-box;
+  background-color: $bg-gray;
+  color: $text-black;
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 3rem;
+    background-color: #bbcee7;
+
+    h4 {
+      font-size: 1.9rem;
+      font-family: $text-font;
+      font-weight: 700;
+      color: $text-blue;
+      i {
+        font-size: 2.5rem;
+      }
+    }
+
+    p {
+      font-size: 1.7rem;
+      font-family: $text-font;
+      color: #706f7b;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+  }
+
+  &__car-info {
+    background-color: $bg-gray;
+    padding: 3rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid #7777779f;
+
+    &__dates {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+
+      span {
+        display: flex;
+        gap: 1rem;
+
+        @media (max-width: 650px) {
+          grid-template-columns: 1fr;
+          text-align: center;
+          justify-content: center;
+        }
+
+        i {
+          font-size: 1.8rem;
+          padding-top: 0.2rem;
+          color: #777777;
+
+          @media (max-width: 650px) {
+            display: none;
+          }
+        }
+
+        h6 {
+          font-size: 1.5rem;
+          font-family: $text-font;
+          margin-bottom: 0.2rem;
+        }
+
+        p {
+          font-size: $p-size;
+          font-family: $text-font;
+          color: #777777;
+        }
+      }
+    }
+
+    &__model {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+
+      @media (max-width: 650px) {
+        margin-top: 3.5rem;
+      }
+
+      h5 {
+        font-size: 1.8rem;
+        color: $text-blue;
+        font-family: $text-font;
+
+        span {
+          color: $text-black;
+        }
+      }
+    }
+
+    img {
+      width: 100%;
+      max-height: 20rem;
+    }
+  }
+
+  &__person-info {
+    padding: 3rem 3rem 0 3rem;
+    background-color: $bg-gray;
+    display: flex;
+    flex-direction: column;
+
+    h4 {
+      font-size: 1.8rem;
+      color: $text-blue;
+      margin-bottom: 2rem;
+      font-family: $text-font;
+      span {
+        color: $text-orange;
+        font-family: $text-font;
+      }
+    }
+
+    select {
+      font-family: $text-font;
+      font-size: $p-size;
+      color: #555;
+      border: none;
+      background-color: #dbdbdb;
+      font-weight: 400;
+      padding: 1.2rem 1.3rem;
+      outline: none;
+    }
+
+    select option:disabled {
+      color: $text-orange;
+    }
+  }
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.enabled {
+  pointer-events: all;
+}
+
+.info-form {
+  display: flex;
+  flex-direction: column;
+
+  &__checkbox {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    font-size: $p-size;
+    color: #565454;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+
+    p {
+      align-self: center;
+    }
+
+    input {
+      width: 1.6rem;
+      height: 1.6rem;
+    }
+
+    button {
+      font-size: 1.6rem;
+      font-family: $text-font;
+      color: $bg-gray;
+      font-weight: 700;
+      background-color: $text-blue;
+      box-shadow: 0 10px 15px 0 rgb(3 129 245 / 35%);
+      border: none;
+      padding: 1.2rem 2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 3rem;
+
+      &:hover {
+        box-shadow: 0 10px 15px 0 rgb(3 129 245 / 60%);
+        background-color: #0066d6;
+      }
+    }
+  }
+
+  &__1col {
+    grid-template-columns: 1fr !important;
+  }
+
+  &__2col,
+  &__1col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 1rem 0;
+
+    @media (max-width: 650px) {
+      grid-template-columns: 1fr;
+    }
+
+    span {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-family: $text-font;
+
+      label {
+        font-size: $p-size;
+        font-family: $text-font;
+        font-weight: 400;
+        color: #555;
+
+        b {
+          color: $text-blue;
+        }
+      }
+
+      input {
+        padding: 14px 15px;
+        font-family: $text-font;
+        background-color: #dbdbdb;
+        color: #555;
+        font-size: 1.6rem;
+        font-weight: 400;
+        outline: none;
+        border: none;
+      }
+
+      input::placeholder {
+        color: #555;
+      }
+    }
+  }
+}
+
+.dates-div {
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem;
+}

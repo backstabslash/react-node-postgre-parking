@@ -1,0 +1,176 @@
+@use "../global" as *;
+
+.log-section {
+  width: 100%;
+  height: 100vh;
+  background-color: $bg-gray;
+  position: relative;
+}
+
+.login-content {
+  width: 100%;
+  height: calc(100vh - 5rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-direction: column;
+  top: 5rem;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    button {
+      padding: 1.5rem 3rem;
+      border-radius: 3px;
+      border: 2px solid $text-blue;
+      box-shadow: 0 10px 15px 0 rgba(3, 129, 245, 0.35);
+      transition: all 0.3s;
+      margin-top: 3rem;
+      background-color: $text-blue;
+      color: $bg-gray;
+      font-weight: 700;
+      font-family: $titles-font;
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: default;
+    }
+
+    button:hover {
+      box-shadow: 0 10px 15px 0 rgb(3 129 245 / 60%);
+      background-color: #0066d6;
+      border: 2px solid #0066d6;
+    }
+
+    &__container {
+      display: block;
+      position: relative;
+      margin: 2rem 0 0.5rem 0;
+
+      label {
+        position: absolute;
+        top: 0.5rem;
+        color: $text-black;
+        font-family: $titles-font;
+        font-size: 1.6rem;
+        cursor: text;
+        user-select: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transition: all 0.2s;
+        transform-origin: left top;
+      }
+
+      input:focus + label {
+        top: -1.5rem;
+        font-size: 1.2rem;
+        transition: all 0.2s;
+        transform-origin: left top;
+        color: $text-blue;
+      }
+
+      input {
+        display: block;
+        width: 30rem;
+        height: 3.2rem;
+        font-size: 1.6rem;
+        font-family: $titles-font;
+        color: $text-black;
+        border: none;
+        border-bottom: 1px solid $text-black;
+        background-color: transparent;
+        box-sizing: border-box;
+        border-radius: 0;
+      }
+
+      input:focus {
+        outline: 0;
+        padding: 0;
+        border-color: $text-blue;
+        vertical-align: baseline;
+        color: $text-blue;
+      }
+    }
+  }
+}
+
+.login-content__header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: $text-black;
+  margin-bottom: 2rem;
+
+  h4 {
+    font-size: $h4-size;
+    font-family: $titles-font;
+    font-weight: 700;
+  }
+}
+
+.login-content__footer {
+  margin-top: 2rem;
+  text-align: center;
+
+  a {
+    font-family: $titles-font;
+    font-size: $p-size;
+  }
+
+  h4 {
+    color: $text-black;
+    font-size: $p-size;
+    font-family: $titles-font;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  a:hover,
+  a:active,
+  a:visited,
+  a:link {
+    font-family: $titles-font;
+    color: $text-blue;
+    font-weight: 600;
+  }
+}
+
+.labelHasContent {
+  top: -1.5rem !important;
+  font-size: 1.2rem !important;
+  transition: all 0.2s;
+  transform-origin: left top;
+  color: $text-blue;
+}
+
+.instructions {
+  text-align: left;
+  font-size: 1.2rem;
+  font-family: $titles-font;
+  color: $text-orange;
+  width: 30rem;
+  padding: 0.2rem 0 0 0;
+  margin: 0;
+}
+
+.offScreen {
+  position: absolute;
+  left: -9999px;
+}
+
+.errMsg {
+  text-align: center;
+  font-size: $p-size;
+  font-family: $titles-font;
+  font-weight: 600;
+  color: $text-orange;
+  margin-bottom: 2rem;
+}

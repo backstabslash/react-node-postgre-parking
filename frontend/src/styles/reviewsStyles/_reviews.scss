@@ -1,0 +1,107 @@
+@use "../global" as *;
+
+.reviews-section {
+  background-color: $bg-gray;
+  padding: 8rem 0;
+  color: $text-black;
+}
+
+.reviews-content {
+  display: flex;
+  flex-direction: column;
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    text-align: center;
+    max-width: 70rem;
+    margin-bottom: 5rem;
+
+    h4 {
+      font-size: $h4-size;
+      font-family: $text-font;
+      font-weight: 500;
+    }
+
+    h2 {
+      font-size: $h2-size;
+      margin-bottom: 1.4rem;
+    }
+
+    p {
+      font-size: $p-size;
+      font-family: $text-font;
+      color: $text-gray;
+      line-height: 1.4;
+    }
+  }
+}
+
+.all-reviews {
+  display: flex;
+  gap: 3rem;
+  width: 100%;
+  justify-content: center;
+  padding: 0 3rem 0 3rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: $bg-white;
+    box-shadow: 0 20px 40px 0 rgb(0 0 0 / 8%);
+    width: 54rem;
+    padding: 5.5rem;
+    position: relative;
+
+    p {
+      font-size: $h4-size;
+      font-weight: 500;
+      font-family: $text-font;
+      color: $text-black;
+    }
+
+    &__name {
+      display: flex;
+
+      &__profile {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        margin-top: 3rem;
+
+        img {
+          width: 7rem;
+          height: 7rem;
+          border-radius: 50%;
+        }
+
+        h4 {
+          font-size: 1.8rem;
+          color: $text-blue;
+        }
+
+        p {
+          font-size: $p-size;
+          font-family: $text-font;
+          color: #706f7b;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}
+
+.quotes-icon {
+  font-size: 5rem;
+  color: $text-blue;
+  position: absolute;
+  bottom: 33px;
+  right: 60px;
+}

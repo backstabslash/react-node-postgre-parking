@@ -125,6 +125,25 @@ export const bookingSlice = createSlice({
       .addCase(getGuestBookings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as number;
+      })
+      // getClientBookings
+      .addCase(getClientBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getClientBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        let bookings: BookingState[] = [];
+        for (let booking of action.payload) {
+          booking.start_date = booking.start_date.substring(0, 10);
+          booking.end_date = booking.end_date.substring(0, 10);
+          bookings.push(booking);
+        }
+        state.bookings = bookings;
+      })
+      .addCase(getClientBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
       });
   },
 });

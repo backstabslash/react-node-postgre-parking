@@ -1,8 +1,8 @@
 import React from "react";
-import "./header.css";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { logout } from "../../redux/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../images/header/logo.png";
 
 function Header() {
   const auth = useAppSelector((state) => state.auth);
@@ -16,35 +16,73 @@ function Header() {
       .catch((err) => console.log(err));
   };
   return (
-    <div className="headerWrapper">
-      <div className="content">
-        <a className="header--button-parking" href="/">
-          super parking
-        </a>
-        {auth.role === "client" || auth.role === "administrator" ? (
-          <>
-            <div className="header--personal">
-              <a className="header--button-username" href="/">
-                {auth.username}
-              </a>
-            </div>
-            <button onClick={handleLogOut} className="header--button-logout">
-              log out
-            </button>
-          </>
-        ) : (
-          <div className="sign-split">
-            <a className="header--button-username" href="/sign_up">
-              sign up
-            </a>{" "}
-            /{" "}
-            <a className="header--button-username" href="/sign_in">
-              log in
-            </a>
+    <>
+      <nav>
+        <div className="navbar">
+          <div className="navbar__img">
+            <Link to="/" onClick={() => window.scrollTo(0, 0)}>
+              <img src={Logo} alt="logo-img" />
+            </Link>
           </div>
-        )}
-      </div>
-    </div>
+          <ul className="navbar__links">
+            <li>
+              <Link className="home-link" to="/">
+                Home
+              </Link>
+            </li>
+            <li>
+              {" "}
+              <Link className="about-link" to="/about">
+                About
+              </Link>
+            </li>
+            <li>
+              {" "}
+              <Link className="testi-link" to="/testimonials">
+                Reviews
+              </Link>
+            </li>
+            <li>
+              {" "}
+              <Link className="team-link" to="/team">
+                Our Team
+              </Link>
+            </li>
+            <li>
+              {" "}
+              <Link className="contact-link" to="/contact">
+                Contact
+              </Link>
+            </li>
+          </ul>
+          <div className="navbar__buttons">
+            {!auth.accessToken ? (
+              <>
+                <Link className="navbar__buttons__sign-in" to="/sign_in">
+                  Sign In
+                </Link>
+                <Link className="navbar__buttons__register" to="/sign_up">
+                  Register
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  className="navbar__buttons__sign-in"
+                  onClick={handleLogOut}
+                  to="/sign_out"
+                >
+                  Log Out
+                </Link>
+                <Link className="navbar__buttons__register" to="/">
+                  {auth.username}
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }
 

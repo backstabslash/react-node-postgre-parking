@@ -8,12 +8,16 @@ interface AuthState {
   role: string | null;
   loading: boolean | null;
   error: number | null;
+  fullName: string | null;
+  phoneNumber: string | null;
 }
 
 const initialState: AuthState = {
   username: null,
   accessToken: null,
   role: "connect_user",
+  fullName: null,
+  phoneNumber: null,
   loading: false,
   error: null,
 };
@@ -123,10 +127,13 @@ export const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        const { username, role, accessToken } = action.payload;
+        const { username, role, accessToken, fullName, phoneNumber } =
+          action.payload;
         state.username = username;
         state.role = role;
         state.accessToken = accessToken;
+        state.fullName = fullName;
+        state.phoneNumber = phoneNumber;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -152,10 +159,13 @@ export const authSlice = createSlice({
       })
       .addCase(refresh.fulfilled, (state, action) => {
         state.loading = false;
-        const { username, role, accessToken } = action.payload;
+        const { username, role, accessToken, fullName, phoneNumber } =
+          action.payload;
         state.username = username;
         state.role = role;
         state.accessToken = accessToken;
+        state.fullName = fullName;
+        state.phoneNumber = phoneNumber;
       })
       .addCase(refresh.rejected, (state, action) => {
         state.loading = false;

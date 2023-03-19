@@ -1,0 +1,143 @@
+@use "../global" as *;
+
+footer {
+  background-color: $bg-white;
+  padding: 8rem 0 4rem 0;
+}
+
+.footer-content {
+  display: grid;
+  color: #010103;
+  grid-template-columns: 27fr 21fr 21fr 21fr;
+  gap: 8rem;
+  justify-content: space-between;
+  text-align: center;
+  color: $text-black;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__1 {
+    list-style: none;
+
+    @media (max-width: 650px) {
+      text-align: center;
+    }
+
+    li {
+      a {
+        text-decoration: none;
+        color: $text-black;
+        transition: all 0.2s;
+
+        &:hover {
+          color: $text-orange;
+        }
+      }
+
+      &:nth-child(1) {
+        font-size: $h3-size;
+        margin-bottom: 1.5rem;
+
+        span {
+          font-weight: 700;
+        }
+      }
+
+      &:nth-child(2) {
+        font-size: $p-size;
+        color: $text-gray;
+        line-height: 1.7;
+        margin-bottom: 3rem;
+      }
+
+      &:nth-child(3),
+      &:nth-child(4) {
+        font-size: $p-size;
+        font-family: $text-font;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  &__2 {
+    list-style: none;
+
+    @media (max-width: 650px) {
+      text-align: center;
+    }
+
+    a {
+      text-decoration: none;
+      color: #706f7b;
+      transition: all 0.2s;
+
+      &:hover {
+        color: $text-orange;
+      }
+    }
+
+    li {
+      font-size: $p-size;
+      margin-bottom: 1rem;
+      color: #706f7b;
+
+      &:nth-child(1) {
+        color: $text-black;
+        font-size: $h3-size;
+        font-weight: 700;
+        font-family: $titles-font;
+        cursor: auto;
+        span {
+          font-weight: 400;
+        }
+      }
+
+      p {
+        color: #706f7b;
+      }
+    }
+
+    input {
+      font-family: $text-font;
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+      line-height: 26px;
+      background-color: #ececec;
+      border-width: 1px;
+      border-color: transparent;
+      padding: 10px 60px;
+      outline: none;
+      margin-top: 1rem;
+    }
+  }
+}
+
+.submit-email {
+  text-decoration: none;
+  color: $bg-white;
+  font-weight: 700;
+  font-family: $text-font;
+  background-color: $text-blue;
+  padding: 1.5rem 2.5rem;
+  border-radius: 0.3rem;
+  box-shadow: 0 10px 15px 0 rgb(3 129 245 / 25%);
+  transition: all 0.3s;
+  font-size: 1.6rem;
+  width: fit-content;
+  cursor: pointer;
+  width: 100%;
+  border: none;
+
+  &:hover {
+    box-shadow: 0 10px 15px 0 rgb(3 129 245 / 40%);
+    background-color: #0066d6;
+  }
+}

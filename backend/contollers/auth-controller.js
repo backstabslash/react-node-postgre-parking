@@ -27,11 +27,8 @@ class AuthController {
     try {
       const { username, password } = req.body;
       const foundUser = await db("connect_user").query(
-        `select category from Users where Users.username = $1 and Users.password = $2`,
-        [
-          username,
-          password, //sha256(password)
-        ]
+        `select category, full_name from Users where Users.username = $1 and Users.password = $2`,
+        [username, sha256(password)]
       );
       if (!foundUser.rowCount) throw "no such user yet";
       // if select returned nothing then throw error
@@ -49,7 +46,12 @@ class AuthController {
         httpOnly: true,
         maxAge: 12 * 60 * 60 * 1000,
       });
-      res.json({ accessToken, role: foundUser.rows[0].category });
+      res.json({
+        accessToken,
+        role: foundUser.rows[0].category,
+        fullName: foundUser.rows[0].full_name,
+        phoneNumber: foundUser.rows[0].phone_number,
+      });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ error: "invalid username or password" }); // unauthorized
@@ -87,6 +89,8 @@ class AuthController {
           accessToken,
           username: decoded.username,
           role: decoded.role,
+          fullName: foundUser.rows[0].full_name,
+          phoneNumber: foundUser.rows[0].phone_number,
         });
       }
     );

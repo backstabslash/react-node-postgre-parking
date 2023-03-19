@@ -1,7 +1,4 @@
 import React, { useEffect } from "react";
-import "./parking.css";
-import Header from "./header/header";
-import Slot from "./main/slot";
 import { useSelector } from "react-redux";
 import { getGuestBookings, getClientBookings } from "../redux/booking";
 import { getSlots } from "../redux/slot";
@@ -9,6 +6,13 @@ import { useAppDispatch } from "../redux/hooks";
 import { getVehiclesByUsername } from "../redux/vehicle";
 import { getDiscountsByUsername } from "../redux/discount";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import Intro from "./main/intro/intro";
+import Book from "./main/book/book";
+import Plan from "./main/plan/plan";
+import Banner from "./main/banner/banner";
+import Reviews from "./main/reviews/reviews";
+import Faq from "./main/faq/faq";
+import Footer from "./footer/footer";
 
 const Parking = () => {
   const auth = useSelector((state) => state.auth);
@@ -25,12 +29,15 @@ const Parking = () => {
   }, []);
 
   return (
-    <div className="parkingWrapper">
-      <Header />
-      <div className="slotsContainer">
-        <Slot />
-      </div>
-    </div>
+    <>
+      <Intro />
+      <Book />
+      <Plan />
+      <Banner />
+      <Reviews />
+      <Faq />
+      <Footer />
+    </>
   );
 };
 
