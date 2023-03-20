@@ -36,16 +36,16 @@ function Footer() {
                 <a href="#home">Home</a>
               </li>
               <li>
-                <a href="#home">About</a>
+                <a href="/about">About</a>
               </li>
               <li>
-                <a href="#home">Reviews</a>
+                <a href="/reviews">Reviews</a>
               </li>
               <li>
-                <a href="#home">Our Team</a>
+                <a href="/team">Our Team</a>
               </li>
               <li>
-                <a href="#home">Contact</a>
+                <a href="/contact">Contact</a>
               </li>
             </ul>
 

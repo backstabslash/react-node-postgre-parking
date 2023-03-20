@@ -318,10 +318,10 @@ function Book() {
 
       <div className={`booking-modal ${modal ? "active-modal" : ""}`}>
         <div className="booking-modal__message">
-          <h4> Upon completing this reservation enquiry, you will receive:</h4>
+          <h4>After submitting your reservation request,</h4>
           <p>
-            Your rental voucher to produce on arrival at the rental desk and a
-            toll-free customer support number.
+            you will receive a rental voucher to present at the rental desk upon
+            arrival, along with a toll-free customer support number.
           </p>
         </div>
         <div className="booking-modal__car-info">

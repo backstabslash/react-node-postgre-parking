@@ -1,4 +1,3 @@
-import React from "react";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { logout } from "../../redux/auth";
 import { Link, useNavigate } from "react-router-dom";
@@ -38,7 +37,7 @@ function Header() {
             </li>
             <li>
               {" "}
-              <Link className="testi-link" to="/testimonials">
+              <Link className="testi-link" to="/reviews">
                 Reviews
               </Link>
             </li>
