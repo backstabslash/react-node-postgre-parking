@@ -54,7 +54,10 @@ function Intro() {
                   Book a Slot &nbsp;{" "}
                   <i className="fa-solid fa-circle-check"></i>
                 </Link>
-                <Link className="intro-content__text__btns__learn-more" to="/">
+                <Link
+                  className="intro-content__text__btns__learn-more"
+                  to="/about"
+                >
                   Learn More &nbsp; <i className="fa-solid fa-angle-right"></i>
                 </Link>
               </div>

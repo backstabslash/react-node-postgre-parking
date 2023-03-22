@@ -1,13 +1,13 @@
 @use "../global" as *;
 
 .plan-section {
-  background-color: $bg-white;
   padding: 0 0 1rem 0;
 }
 
 .plan-container {
   display: flex;
   flex-direction: column;
+  margin-bottom: 8rem;
 
   &__title {
     margin: 0 auto;

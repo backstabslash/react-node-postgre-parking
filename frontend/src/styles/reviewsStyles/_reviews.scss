@@ -39,15 +39,16 @@
 }
 
 .all-reviews {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
   gap: 3rem;
   width: 100%;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0 3rem 0 3rem;
 
   @media (max-width: 900px) {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
   }
 
   &__box {
@@ -56,9 +57,13 @@
     justify-content: space-between;
     background-color: $bg-white;
     box-shadow: 0 20px 40px 0 rgb(0 0 0 / 8%);
-    width: 54rem;
+    // width: ;
     padding: 5.5rem;
     position: relative;
+
+    @media (max-width: 1000px) {
+      padding: 5rem 3rem;
+    }
 
     p {
       font-size: $h4-size;
@@ -104,4 +109,8 @@
   position: absolute;
   bottom: 33px;
   right: 60px;
+
+  @media (max-width: 470px) {
+    display: none;
+  }
 }

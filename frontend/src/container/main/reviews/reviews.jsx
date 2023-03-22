@@ -1,7 +1,7 @@
 import Profile1 from "../../../images/reviews/pfp1.jpg";
 import Profile2 from "../../../images/reviews/pfp2.jpg";
 
-function Reviews() {
+function Reviews({ paddingTop = 80 }) {
   const reviews = [
     {
       review:
@@ -20,9 +20,9 @@ function Reviews() {
   ];
 
   const getReviews = () => {
-    return reviews.map((review) => {
+    return reviews.map((review, id) => {
       return (
-        <div className="all-reviews__box">
+        <div key={id} className="all-reviews__box">
           <span className="quotes-icon">
             <i className="fa-solid fa-quote-right"></i>
           </span>
@@ -43,7 +43,7 @@ function Reviews() {
 
   return (
     <>
-      <section className="reviews-section">
+      <section className="reviews-section" style={{ paddingTop: paddingTop }}>
         <div className="container">
           <div className="reviews-content">
             <div className="reviews-content__title">

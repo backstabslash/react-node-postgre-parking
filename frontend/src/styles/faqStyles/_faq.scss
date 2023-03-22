@@ -57,6 +57,10 @@
   width: 80rem;
   cursor: pointer;
 
+  @media (max-width: 850px) {
+    width: 100%;
+  }
+
   &__question {
     display: flex;
     justify-content: space-between;
@@ -91,6 +95,14 @@
   max-height: 20rem;
   padding: 2.8rem 4.5rem;
   transition: 0.4s ease;
+
+  @media (max-width: 550px) {
+    max-height: 30rem;
+  }
+
+  @media (max-width: 420px) {
+    max-height: 55rem;
+  }
 }
 
 .active-question {
