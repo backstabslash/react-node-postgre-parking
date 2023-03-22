@@ -1,21 +1,25 @@
 @use "../global" as *;
 
 .reg-section {
-  width: 100%;
-  height: 100vh;
   background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
-  position: relative;
+  margin-top: 8rem;
+}
+
+.reg-section::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 12rem;
+  margin: -80px 0 0 0;
 }
 
 .register-content {
   width: 100%;
-  height: calc(100vh - 5rem);
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
   flex-direction: column;
-  top: 5rem;
+  padding-top: 4rem;
 
   &__form {
     display: flex;

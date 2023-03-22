@@ -318,7 +318,10 @@ function Book() {
 
       <div className={`booking-modal ${modal ? "active-modal" : ""}`}>
         <div className="booking-modal__message">
-          <h4>After submitting your reservation request,</h4>
+          <h4>After submitting your reservation request </h4>
+          <i onClick={openModal} className="fa-solid fa-xmark"></i>
+        </div>
+        <div className="booking-modal__lowermessage">
           <p>
             you will receive a rental voucher to present at the rental desk upon
             arrival, along with a toll-free customer support number.
@@ -510,10 +513,10 @@ function Book() {
                 <input type="checkbox"></input> &nbsp; Subscribe to our
                 newsletter
               </p>
-              <p>
-                Total Price: {totalPrice} ₴
+              <span>
+                <p>Total price: {totalPrice} ₴</p>{" "}
                 <button onClick={confirmBooking}>Reserve Now</button>
-              </p>
+              </span>
             </span>
           </form>
         </div>
