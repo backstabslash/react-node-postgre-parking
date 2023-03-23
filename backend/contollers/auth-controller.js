@@ -27,7 +27,7 @@ class AuthController {
     try {
       const { username, password } = req.body;
       const foundUser = await db("connect_user").query(
-        `select category, full_name from Users where Users.username = $1 and Users.password = $2`,
+        `select category, full_name, phone_number from Users where Users.username = $1 and Users.password = $2`,
         [username, sha256(password)]
       );
       if (!foundUser.rowCount) throw "no such user yet";
@@ -35,12 +35,12 @@ class AuthController {
       const accessToken = jwt.sign(
         { username, role: foundUser.rows[0].category },
         process.env.ACCESS_TOKEN_SALT,
-        { expiresIn: "30s" }
+        { expiresIn: "1h" }
       );
       const refreshToken = jwt.sign(
         { username, role: foundUser.rows[0].category },
         process.env.REFRESH_TOKEN_SALT,
-        { expiresIn: "12h" }
+        { expiresIn: "24h" }
       );
       res.cookie("jwt", refreshToken, {
         httpOnly: true,

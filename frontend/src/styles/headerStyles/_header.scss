@@ -115,7 +115,7 @@
   position: fixed;
   top: 0;
   left: -100%;
-  background-color: $bg-gray;
+  background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
   z-index: 999999;
   justify-content: center;
   align-items: center;
@@ -127,10 +127,11 @@
     top: 3.5rem;
     right: 3.5rem;
     cursor: pointer;
+    color: $text-blue;
     transition: all 0.3s;
 
     &:hover {
-      color: $text-blue;
+      color: $text-black;
     }
   }
 

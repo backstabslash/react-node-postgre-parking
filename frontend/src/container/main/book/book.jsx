@@ -32,7 +32,7 @@ function Book() {
   const [lastName, setLastName] = useState(
     auth.fullName?.substring(auth.fullName.indexOf(" ") + 1) || ""
   );
-  const [phone, setPhone] = useState(auth.phoneNumber || "");
+  const [phone, setPhone] = useState("");
   const [age, setAge] = useState("18");
   const [wantedVehicle, setWantedVehicle] = useState("");
   const [wantedSlot, setWantedSlot] = useState("");
@@ -58,6 +58,7 @@ function Book() {
     setTotalPrice(0);
     setWantedSlot("");
     setWantedVehicle("");
+    setPhone(auth.phoneNumber || "");
   }, [vehicleType]);
 
   useEffect(() => {
@@ -228,11 +229,12 @@ function Book() {
 
   const getVehicles = () => {
     return properVehicles.map((vehicle) => {
-      const isDisabled = bookings.filter(
-        (book) =>
-          Date.parse(book.end_date) < Date.now &&
-          book.vehicle_id === vehicle.vehicle_id
-      );
+      const isDisabled =
+        bookings.filter(
+          (book) =>
+            (book.status === "ongoing" || book.status === "upcoming") &&
+            book.vehicle_id === vehicle.vehicle_id
+        ).length > 0;
       return (
         <option
           value={vehicle.vehicle_id}

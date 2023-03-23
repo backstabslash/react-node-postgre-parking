@@ -1,8 +1,8 @@
 import Footer from "../container/footer/footer";
 import Banner from "../container/main/banner/banner";
-import Member1 from "../images/team/1.jpg";
-import Member2 from "../images/team/2.jpg";
-import Member3 from "../images/team/3.jpg";
+import Member1 from "../images/team/1.png";
+import Member2 from "../images/team/2.png";
+import Member3 from "../images/team/3.png";
 
 function Team() {
   const team = [

@@ -199,7 +199,7 @@
   max-height: calc(100vh - 60px);
   overflow-y: scroll;
   box-sizing: border-box;
-  background-color: $bg-gray;
+  background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
   color: $text-black;
 
   @media (max-width: 800px) {

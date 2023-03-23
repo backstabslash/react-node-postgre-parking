@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import "./profile.css";
 import { useAppSelector } from "../redux/hooks";
 
-function Slot() {
+function Profile() {
   const auth = useAppSelector((state) => state.auth);
   const bookings = useAppSelector((state) => state.booking.bookings);
   const vehicles = useAppSelector((state) => state.vehicle.vehicles);
@@ -11,4 +9,4 @@ function Slot() {
   return <></>;
 }
 
-export default Slot;
+export default Profile;

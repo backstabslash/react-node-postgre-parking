@@ -9,6 +9,7 @@ import About from "./components/about";
 import ReviewsPage from "./components/reviewspage";
 import Team from "./components/team";
 import Contact from "./components/contact";
+import Profile from "./components/profile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/team" element={<Team />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </div>

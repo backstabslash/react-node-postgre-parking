@@ -27,6 +27,9 @@ function Header() {
   useEffect(() => {
     const currentPath = location.pathname;
     switch (currentPath) {
+      case "/":
+        setActiveLink("home");
+        break;
       case "/about":
         setActiveLink("about");
         break;
@@ -46,7 +49,7 @@ function Header() {
         setActiveLink("signup");
         break;
       default:
-        setActiveLink("home");
+        setActiveLink("");
     }
   }, [location]);
 
@@ -234,7 +237,7 @@ function Header() {
                 >
                   Log Out
                 </Link>
-                <Link className="navbar__buttons__register" to="/">
+                <Link className="navbar__buttons__register" to="/profile">
                   {auth.username}
                 </Link>
               </>

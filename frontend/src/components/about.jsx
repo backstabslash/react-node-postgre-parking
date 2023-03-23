@@ -1,6 +1,6 @@
 import Plan from "../container/main/plan/plan";
 import Footer from "../container/footer/footer";
-import AboutMain from "../images/about/about-main.jpg";
+import AboutMain from "../images/about/about-main.png";
 import Box1 from "../images/about/icon1.png";
 import Box2 from "../images/about/icon2.png";
 import Box3 from "../images/about/icon3.png";
