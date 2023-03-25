@@ -26,7 +26,6 @@ class BookingController {
         remarks,
       ]
     );
-    // add error handler with broken sequence fix
     res.json(newBooking);
   }
 

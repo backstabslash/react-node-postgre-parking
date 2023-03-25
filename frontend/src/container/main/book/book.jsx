@@ -517,7 +517,11 @@ function Book() {
               </p>
               <span>
                 <p>Total price: {totalPrice} ₴</p>{" "}
-                <button onClick={confirmBooking}>Reserve Now</button>
+                <button
+                // onClick={confirmBooking}
+                >
+                  Reserve Now
+                </button>
               </span>
             </span>
           </form>

@@ -88,7 +88,9 @@ const Register = () => {
           <div className="register-content__header">
             <h4>Set up your account</h4>
           </div>
-          <form className="register-content__form" onSubmit={handleSubmit}>
+          <form
+            className="register-content__form" //onSubmit={handleSubmit}
+          >
             <p
               className={`register-content__form__error ${
                 errMsg ? "errMsg" : "offScreen"
