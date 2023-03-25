@@ -17,16 +17,16 @@ import Footer from "./footer/footer";
 const Parking = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const axiosPrivate = useAxiosPrivate();
-  useEffect(() => {
-    dispatch(getGuestBookings(axiosPrivate));
-    dispatch(getSlots(axiosPrivate));
-    if (auth.role !== "connect_user") {
-      dispatch(getClientBookings(axiosPrivate));
-      dispatch(getVehiclesByUsername(axiosPrivate));
-      dispatch(getDiscountsByUsername(axiosPrivate));
-    }
-  }, []);
+  // const axiosPrivate = useAxiosPrivate();
+  // useEffect(() => {
+  //   dispatch(getGuestBookings(axiosPrivate));
+  //   dispatch(getSlots(axiosPrivate));
+  //   if (auth.role !== "connect_user") {
+  //     dispatch(getClientBookings(axiosPrivate));
+  //     dispatch(getVehiclesByUsername(axiosPrivate));
+  //     dispatch(getDiscountsByUsername(axiosPrivate));
+  //   }
+  // }, []);
 
   return (
     <>
