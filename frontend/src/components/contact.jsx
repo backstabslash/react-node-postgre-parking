@@ -41,7 +41,7 @@ function Contact() {
                 </label>
                 <textarea placeholder="Enter your message here..."></textarea>
 
-                <button type="submit">
+                <button type="submit" onClick={(e) => e.preventDefault()}>
                   <i className="fa-solid fa-envelope-open-text"></i>&nbsp; Send
                   Message
                 </button>

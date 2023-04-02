@@ -39,9 +39,7 @@ const Login = () => {
           <div className="login-content__header">
             <h4>Sign in to your account</h4>
           </div>
-          <form
-            className="login-content__form" //onSubmit={handleSubmit}
-          >
+          <form className="login-content__form" onSubmit={handleSubmit}>
             <p
               className={`login-content__form__error ${
                 errMsg ? "errMsg" : "offScreen"

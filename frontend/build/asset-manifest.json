@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/static/css/main.8c2e6c6c.css",
+    "main.js": "/static/js/main.02dcbb29.js",
+    "static/media/car.png": "/static/media/car.3cf810aefa18b969e692.png",
+    "static/media/bus.png": "/static/media/bus.f7d363623bf7d464d443.png",
+    "static/media/truck.png": "/static/media/truck.872fa327bedaaeff42e9.png",
+    "static/media/pfp1.jpg": "/static/media/pfp1.b0b5ba06ef3779fa0b8b.jpg",
+    "static/media/motorcycle.png": "/static/media/motorcycle.57c6c2488fa70929482f.png",
+    "static/media/pfp2.jpg": "/static/media/pfp2.b53dc1dd13de4a0df736.jpg",
+    "static/media/1.png": "/static/media/1.1d499e4b69de7b9e10fb.png",
+    "static/media/2.png": "/static/media/2.f41d050c1c5b9e59fc22.png",
+    "static/media/3.png": "/static/media/3.528b8c60ae315bc6a52a.png",
+    "static/media/book-bg.png": "/static/media/book-bg.1e4745aca1d4dc547496.png",
+    "static/media/logo.png": "/static/media/logo.63102755baab56c3e1f3.png",
+    "static/media/bg.png": "/static/media/bg.4efd24e422f3af09dfd3.png",
+    "static/media/about-main.png": "/static/media/about-main.7ec7745f284e4a247f70.png",
+    "static/media/bg-contact.png": "/static/media/bg-contact.c178c6db0f988d408d94.png",
+    "index.html": "/index.html",
+    "main.8c2e6c6c.css.map": "/static/css/main.8c2e6c6c.css.map",
+    "main.02dcbb29.js.map": "/static/js/main.02dcbb29.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8c2e6c6c.css",
+    "static/js/main.02dcbb29.js"
+  ]
+}

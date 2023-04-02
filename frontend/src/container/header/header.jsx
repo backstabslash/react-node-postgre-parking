@@ -133,7 +133,7 @@ function Header() {
                   <Link
                     className={`${activeLink === "signin" ? "active" : ""}`}
                     onClick={() => {
-                      //handleLogOut();
+                      handleLogOut();
                       openNav();
                     }}
                     to="/sign_out"
@@ -232,7 +232,7 @@ function Header() {
               <>
                 <Link
                   className="navbar__buttons__sign-in"
-                  // onClick={handleLogOut}
+                  onClick={handleLogOut}
                   to="/sign_out"
                 >
                   Log Out
