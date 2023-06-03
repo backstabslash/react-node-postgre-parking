@@ -10,8 +10,32 @@ import ReviewsPage from "./components/reviewspage";
 import Team from "./components/team";
 import Contact from "./components/contact";
 import Profile from "./components/profile";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { getGuestBookings, getClientBookings } from "./redux/booking";
+import { getSlots } from "./redux/slot";
+import { useAppDispatch } from "./redux/hooks";
+import { getVehiclesByUsername } from "./redux/vehicle";
+import { getDiscountsByUsername } from "./redux/discount";
+import useAxiosPrivate from "./hooks/useAxiosPrivate";
 
 function App() {
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const axiosPrivate = useAxiosPrivate();
+  useEffect(() => {
+    dispatch(getGuestBookings(axiosPrivate));
+    dispatch(getSlots(axiosPrivate));
+  }, []);
+
+  useEffect(() => {
+    if (auth.role !== "connect_user") {
+      dispatch(getClientBookings(axiosPrivate));
+      dispatch(getVehiclesByUsername(axiosPrivate));
+      dispatch(getDiscountsByUsername(axiosPrivate));
+    }
+  }, [auth.role]);
+
   return (
     <BrowserRouter>
       <div>

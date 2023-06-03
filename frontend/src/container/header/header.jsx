@@ -145,7 +145,7 @@ function Header() {
                   <Link
                     className={`${activeLink === "signup" ? "active" : ""}`}
                     onClick={openNav}
-                    to="/"
+                    to="/profile"
                   >
                     {auth.username}
                   </Link>

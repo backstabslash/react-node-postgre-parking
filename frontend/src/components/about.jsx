@@ -1,6 +1,5 @@
 import Plan from "../container/main/plan/plan";
 import Footer from "../container/footer/footer";
-import AboutMain from "../images/about/about-main.png";
 import Box1 from "../images/about/icon1.png";
 import Box2 from "../images/about/icon2.png";
 import Box3 from "../images/about/icon3.png";
@@ -12,14 +11,9 @@ function About() {
       <section className="about-page">
         <div className="container">
           <div className="about-main">
-            <img
-              className="about-main__img"
-              src={AboutMain}
-              alt="car-renting"
-            />
             <div className="about-main__text">
               <h3>About our Company</h3>
-              <h2>Super Parking — your go-to for unbeatable parking deals</h2>
+              <h2>Your go-to for Unbeatable Parking Deals</h2>
               <p>
                 Rent your dream parking slot at unbeatable prices with unlimited
                 hours and flexible options. Our friendly operators provide
