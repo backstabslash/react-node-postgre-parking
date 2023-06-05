@@ -52,6 +52,84 @@ export const getVehiclesByUsername = createAsyncThunk(
   }
 );
 
+export const updateVehicleById = createAsyncThunk(
+  "vehicle/updatevehiclebyid",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      vehicle_id: number;
+      vehicle_category: string;
+      brand: string;
+      plate_number: string;
+    },
+    { rejectWithValue }
+  ) => {
+    const { axiosPrivate, vehicle_id, vehicle_category, brand, plate_number } =
+      data;
+    try {
+      const response = await axiosPrivate.put(
+        `/vehicle/id/${encodeURIComponent(vehicle_id)}`,
+        { vehicle_id, vehicle_category, brand, plate_number }
+      );
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
+export const postVehicle = createAsyncThunk(
+  "vehicle/postvehicle",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      vehicle_category: string;
+      brand: string;
+      plate_number: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    const { axiosPrivate, vehicle_category, brand, plate_number } = data;
+    const state = getState() as any;
+    try {
+      const response = await axiosPrivate.post("/vehicle/vehicle", {
+        username: state.auth.username,
+        plate_number,
+        brand,
+        vehicle_category,
+      });
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
+export const deleteVehicleById = createAsyncThunk(
+  "vehicle/deletevehiclebyid",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      vehicle_id: number;
+    },
+    { rejectWithValue }
+  ) => {
+    const { axiosPrivate, vehicle_id } = data;
+    try {
+      const response = await axiosPrivate.delete(
+        `/vehicle/id/${encodeURIComponent(vehicle_id)}`,
+        {}
+      );
+      return vehicle_id;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
 export const vehicleSlice = createSlice({
   name: "vehicle",
   initialState,
@@ -82,6 +160,62 @@ export const vehicleSlice = createSlice({
         state.vehicles = action.payload;
       })
       .addCase(getVehiclesByUsername.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+        state.vehicles = [];
+      })
+      // updateVehicleById
+      .addCase(updateVehicleById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateVehicleById.fulfilled, (state, action) => {
+        const updatedVehicle = action.payload[0];
+        const vehicles = JSON.parse(JSON.stringify(state.vehicles));
+        for (let i = 0; i < vehicles.length; i++) {
+          if (vehicles[i].vehicle_id === updatedVehicle.vehicle_id) {
+            vehicles[i] = updatedVehicle;
+            state.vehicles = vehicles;
+          }
+        }
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateVehicleById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+        state.vehicles = [];
+      })
+      // postVehicle
+      .addCase(postVehicle.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(postVehicle.fulfilled, (state, action) => {
+        state.vehicles = [...(state.vehicles || []), action.payload[0]];
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(postVehicle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+        state.vehicles = [];
+      })
+      // deleteVehicleById
+      .addCase(deleteVehicleById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteVehicleById.fulfilled, (state, action) => {
+        const deletedVehicleId = action.payload;
+        state.vehicles =
+          state.vehicles?.filter(
+            (vehicle) => vehicle.vehicle_id !== deletedVehicleId
+          ) || [];
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(deleteVehicleById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as number;
         state.vehicles = [];

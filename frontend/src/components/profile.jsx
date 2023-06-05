@@ -1,7 +1,13 @@
-import UserVehicles from "../container/user-page/vehicles";
+import UserPersonal from "../container/user-page/personal/personal";
+import UserVehicles from "../container/user-page/vehicles/vehicles";
 
 function Profile() {
-  return <UserVehicles />;
+  return (
+    <section className="profile">
+      <UserVehicles />
+      <UserPersonal />
+    </section>
+  );
 }
 
 export default Profile;

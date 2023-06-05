@@ -3,10 +3,10 @@ const db = require("../db-config");
 class VehicleController {
   // post vehicle
   async createVehicle(req, res) {
-    const { user_id, plate_number, brand, vehicle_category } = req.body;
+    const { username, plate_number, brand, vehicle_category } = req.body;
     const newVehicle = await db(req.body.role).query(
-      `insert into Vehicle (user_id, plate_number, brand, vehicle_category) values ($1, $2, $3, $4)`,
-      [user_id, plate_number, brand, vehicle_category]
+      `insert into Vehicle (user_id, plate_number, brand, vehicle_category) values ((select user_id from Users where username = $1), $2, $3, $4) returning vehicle_id, user_id, plate_number, brand, vehicle_category`,
+      [username, plate_number, brand, vehicle_category]
     );
     res.json(newVehicle);
   }
@@ -39,20 +39,34 @@ class VehicleController {
 
   // delete vehicle by id
   async deleteVehicleByID(req, res) {
-    db(req.body.role).query(
-      `delete from Vehicle where Vehicle.vehicle_id = $1`,
-      [req.body.vehicle_id]
+    const vehicleId = req.params.id;
+    const deletedId = await db(req.body.role).query(
+      `delete from Vehicle where Vehicle.vehicle_id = $1 returning vehicle_id`,
+      [vehicleId]
     );
+    res.json(deletedId);
   }
 
-  //update whole vehicle by id
+  // update whole vehicle by id
   async putVehicleByID(req, res) {
-    const { user_id, plate_number, brand, vehicle_category, vehicle_id } =
-      req.body;
-    db(req.body.role).query(
-      `update Vehicle set user_id = $1, plate_number = $2, brand = $3, vehicle_category = $4 where Vehicle.vehicle_id = $5`,
-      [user_id, plate_number, brand, vehicle_category, vehicle_id]
-    );
+    const { plate_number, brand, vehicle_category, vehicle_id } = req.body;
+    try {
+      await db(req.body.role).query("begin");
+      await db(req.body.role).query(
+        "update Vehicle set plate_number = $1, brand = $2, vehicle_category = $3 where vehicle_id = $4",
+        [plate_number, brand, vehicle_category, vehicle_id]
+      );
+      const singleVehicle = await db(req.body.role).query(
+        "select * from Vehicle where vehicle_id = $1",
+        [vehicle_id]
+      );
+      await db(req.body.role).query("commit");
+      res.json(singleVehicle);
+    } catch (err) {
+      await db(req.body.role).query("rollback");
+      console.error(err);
+      res.status(500).json({ error: "Failed to update vehicle." });
+    }
   }
 }
 

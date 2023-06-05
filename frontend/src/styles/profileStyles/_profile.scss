@@ -1,7 +1,12 @@
 @use "../global/" as *;
 
-.profile__vehicles-section {
+.profile {
   background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
+}
+
+//vehicles
+
+.profile__vehicles-section {
   margin-top: 8rem;
 }
 
@@ -45,7 +50,7 @@
     align-items: center;
     gap: 1rem;
 
-    @media (max-width: 700px) {
+    @media (max-width: 1000px) {
       flex-direction: column;
       gap: 5rem;
     }
@@ -55,11 +60,13 @@
 .pick-box {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  // justify-content: space-evenly;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+  gap: 1rem;
 
-  @media (max-width: 700px) {
-    width: 100%;
+  @media (max-width: 1000px) {
+    width: 100% !important;
   }
 
   .veh-btns {
@@ -68,14 +75,42 @@
     color: $bg-gray;
     font-weight: 700;
     background-color: #52525b;
+    width: 20ch;
     border: none;
-    padding: 1.5rem 2rem;
+    padding: 1.4rem 1.5rem;
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 3px;
 
     &:hover {
-      background-color: #0066d6;
+      background-color: #3f3f46;
+    }
+  }
+
+  .veh-btns-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem 1.5rem;
+    font-size: 1.6rem;
+    font-family: $text-font;
+    color: $bg-gray;
+    font-weight: 700;
+    width: 20ch;
+    background-color: #52525b;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: #3f3f46;
+    }
+
+    svg {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin-right: 0.5rem;
     }
   }
 }
@@ -84,7 +119,7 @@
   width: 50rem;
   position: relative;
 
-  @media (max-width: 700px) {
+  @media (max-width: 1000px) {
     width: 100%;
   }
 
@@ -95,43 +130,45 @@
 }
 
 .colored-button {
-  background-color: #2563eb !important;
+  background-color: $text-blue !important;
   color: $bg-white;
 }
 
 .profile-veh-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   font-size: 1.6rem;
   font-family: $text-font;
-  color: $bg-gray;
   font-weight: 700;
+  padding: 1.4rem 1.5rem;
+  width: 20ch;
   border: none;
-  padding: 1.5rem 2rem;
+  background: none;
   cursor: pointer;
-  transition: all 0.2s;
-  border-radius: 3px;
+  color: $text-black;
+  transition: all 0.3s;
+
+  svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.5rem;
+  }
 }
 
 .edit-btn {
-  background-color: #2563eb;
-
   &:hover {
-    background-color: #1d4ed8;
+    color: $text-blue;
   }
 }
-
+.del-btn {
+  &:hover {
+    color: #dc2626;
+  }
+}
 .save-btn {
-  background-color: #16a34a;
-
   &:hover {
-    background-color: #15803d;
-  }
-}
-
-.delete-btn {
-  background-color: #e11d48;
-
-  &:hover {
-    background-color: #b91c1c;
+    color: #16a34a;
   }
 }
 
@@ -142,7 +179,7 @@
   border: 1px solid #ccd7e6;
   border-radius: 3px;
   font-weight: 400;
-  padding: 1.2rem 1.3rem;
+  padding: 1.4rem 1.5rem;
   outline: none;
 }
 
@@ -183,7 +220,7 @@
       }
 
       input {
-        padding: 14px 15px;
+        padding: 1.4rem 1.5rem;
         font-family: $text-font;
         background-color: #ffffff;
         border-radius: 3px;
@@ -197,6 +234,136 @@
       input::placeholder {
         color: #555;
       }
+
+      input:disabled {
+        opacity: 0.7;
+      }
     }
   }
+}
+
+// personal
+
+.profile__personal-section {
+  margin-top: 8rem;
+}
+
+.personal-form {
+  display: flex;
+  flex-direction: column;
+
+  &__3col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    padding: 1rem 0;
+    margin-bottom: 8rem;
+
+    @media (max-width: 800px) {
+      grid-template-columns: 1fr;
+    }
+
+    span {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-family: $text-font;
+
+      label {
+        font-size: $p-size;
+        font-family: $text-font;
+        font-weight: 400;
+        color: #555;
+
+        b {
+          color: $text-blue;
+        }
+      }
+
+      input {
+        padding: 1.4rem 1.5rem;
+        font-family: $text-font;
+        background-color: #ffffff;
+        border-radius: 3px;
+        border: 1px solid #ccd7e6;
+        color: $text-gray;
+        font-size: 1.5rem;
+        font-weight: 400;
+        outline: none;
+      }
+
+      input::placeholder {
+        color: #555;
+      }
+
+      input:disabled {
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+.personal-btns {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.5rem;
+  }
+}
+
+.personal-upd-btns {
+  display: flex;
+  flex-direction: row !important;
+  justify-content: center;
+  width: 100%;
+  height: 49px;
+  align-items: flex-start;
+}
+
+.instr-hidden {
+  visibility: hidden;
+}
+
+.profile-personal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 49px;
+  background-color: $text-blue;
+  gap: 1rem;
+  font-size: 1.6rem;
+  font-family: $text-font;
+  border-radius: 3px;
+  font-weight: 700;
+  padding: 1.4rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  color: $bg-gray;
+  transition: all 0.3s;
+  background-color: #52525b;
+
+  &:hover {
+    background-color: #3f3f46;
+  }
+}
+
+.personal-blue-btn {
+  background-color: $text-blue;
+
+  &:hover {
+    background-color: #0066d6;
+  }
+}
+
+.instructions-profile {
+  color: $text-orange !important;
+}
+
+.offScreen {
+  position: absolute;
+  left: -9999px;
 }

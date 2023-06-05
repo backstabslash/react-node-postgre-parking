@@ -1,4 +1,5 @@
 const db = require("../db-config");
+const sha256 = require("sha256");
 
 class UsersController {
   // get all users
@@ -37,6 +38,42 @@ class UsersController {
     db(req.body.role).query(`delete from Users where Users.username = $1`, [
       req.body.username,
     ]);
+  }
+
+  // update user by username
+  async updateUserByUsername(req, res) {
+    const {
+      username,
+      new_username,
+      full_name,
+      phone_number,
+      password,
+      new_password,
+    } = req.body;
+
+    if (new_password === "") new_password = password;
+    console.log(
+      username,
+      new_username,
+      full_name,
+      phone_number,
+      password,
+      new_password
+    );
+    const updated = await db(req.body.role).query(
+      `update Users set username = $1, full_name = $2, phone_number = $3, password = $4 where username = $5 and password = $6 
+      returning username, full_name, phone_number`,
+      [
+        new_username,
+        full_name,
+        phone_number,
+        new_password,
+        username,
+        sha256(password),
+      ]
+    );
+    console.log(updated);
+    res.json(updated);
   }
 
   // update user role by id

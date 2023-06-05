@@ -121,10 +121,11 @@ function Book() {
       errorMsgEmpty.style.display = "flex";
     else if (
       arrivalTime > departureTime ||
-      Date.parse(arrivalTime) < Date.now()
-    )
+      Date.parse(arrivalTime) + 86400000 < Date.now()
+    ) {
+      console.log(Date.parse(arrivalTime) + 86400000, Date.now());
       errorMsgDates.style.display = "flex";
-    else {
+    } else {
       setModal(!modal);
       const modalDiv = document.querySelector(".booking-modal");
       modalDiv.scroll(0, 0);

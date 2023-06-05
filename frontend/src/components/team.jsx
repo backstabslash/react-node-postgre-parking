@@ -28,30 +28,28 @@ function Team() {
   };
 
   return (
-    <>
-      <section className="team-page">
-        <div className="container">
-          <div className="team-content">
-            <div className="team-content__title">
-              <h4>About our Team</h4>
-              <h2>Meet the Super Parking Team</h2>
-              <p>
-                Our team is here to ensure your vehicle is safe and secure while
-                parked with us, and we go above and beyond to ensure your
-                satisfaction. We understand that planning your vehicle's rest
-                can be stressful, which is why we make the process as easy as
-                possible. Our website allows you to reserve your dream parking
-                slot in just a few clicks, and our friendly operators are always
-                available to answer any questions you may have.
-              </p>
-            </div>
-            <div className="team-container">{getMembers()}</div>
+    <section className="team-page">
+      <div className="container">
+        <div className="team-content">
+          <div className="team-content__title">
+            <h4>About our Team</h4>
+            <h2>Meet the Super Parking Team</h2>
+            <p>
+              Our team is here to ensure your vehicle is safe and secure while
+              parked with us, and we go above and beyond to ensure your
+              satisfaction. We understand that planning your vehicle's rest can
+              be stressful, which is why we make the process as easy as
+              possible. Our website allows you to reserve your dream parking
+              slot in just a few clicks, and our friendly operators are always
+              available to answer any questions you may have.
+            </p>
           </div>
+          <div className="team-container">{getMembers()}</div>
         </div>
-        <Banner />
-        <Footer />
-      </section>
-    </>
+      </div>
+      <Banner />
+      <Footer />
+    </section>
   );
 }
 

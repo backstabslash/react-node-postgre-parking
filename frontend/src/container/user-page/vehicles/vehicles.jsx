@@ -1,12 +1,9 @@
-import { useAppSelector } from "../../redux/hooks";
+import { useAppSelector } from "../../../redux/hooks";
 import React, { useState, useEffect } from "react";
 import CarBox from "./carBox";
 
 function UserVehicles() {
-  const auth = useAppSelector((state) => state.auth);
-  const bookings = useAppSelector((state) => state.booking.bookings);
   const vehicles = useAppSelector((state) => state.vehicle.vehicles);
-  const discounts = useAppSelector((state) => state.discount.discounts);
 
   const [active, setActive] = useState("");
   const [vehicle, setVehicle] = useState({});
@@ -64,9 +61,7 @@ function UserVehicles() {
                   </button>
                 ))}
                 <button
-                  className={`${coloringButton(
-                    "newVeh"
-                  )} profile-veh-btn save-btn`}
+                  className={`${coloringButton("newVeh")} veh-btns-add`}
                   onClick={() => {
                     if ("newVeh" !== active) {
                       setActive("newVeh");
@@ -74,24 +69,32 @@ function UserVehicles() {
                     }
                   }}
                 >
-                  + Add New Vehicle
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Add New Vehicle
                 </button>
               </div>
-              <CarBox vehicle={vehicle} />
-              <div className="pick-box">
-                <button className="edit-btn profile-veh-btn" onClick={() => {}}>
-                  Edit Data
-                </button>
-                <button className="save-btn profile-veh-btn" onClick={() => {}}>
-                  Save Changes
-                </button>
-                <button
-                  className="delete-btn profile-veh-btn"
-                  onClick={() => {}}
-                >
-                  Delete Vehicle
-                </button>
-              </div>
+              <CarBox
+                vehicle={
+                  active === "newVeh"
+                    ? {
+                        brand: "",
+                        plate_number: "",
+                        vehicle_category: "",
+                        newVeh: true,
+                      }
+                    : vehicle
+                }
+              />
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError, AxiosInstance } from "axios";
+import { useDispatch } from "react-redux";
+import { updateUsername, updatePhoneNumber, updateFullName } from "./auth";
 
 interface UserState {
   user_id: number | null;
@@ -23,10 +25,50 @@ const initialState: UsersState = {
 };
 
 export const getUsers = createAsyncThunk(
-  "user/users",
+  "users/users",
   async (axiosPrivate: AxiosInstance, { rejectWithValue }) => {
     try {
       const response = await axiosPrivate.get("/user/users");
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
+export const updateUserByUsername = createAsyncThunk(
+  "users/updateuserbyusername",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      username: string;
+      new_username: string;
+      phone_number: string;
+      full_name: string;
+      password: string;
+      new_password: string;
+    },
+    { rejectWithValue, dispatch }
+  ) => {
+    const {
+      axiosPrivate,
+      username,
+      phone_number,
+      full_name,
+      password,
+      new_password,
+      new_username,
+    } = data;
+    try {
+      const response = await axiosPrivate.put(
+        `users/username/${encodeURIComponent(username)}`,
+        { username, phone_number, full_name, password, new_password }
+      );
+      console.log(response);
+      dispatch(updateUsername(new_username));
+      dispatch(updatePhoneNumber(phone_number));
+      dispatch(updateFullName(full_name));
       return response.data.rows;
     } catch (err) {
       const error = err as AxiosError;
