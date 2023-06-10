@@ -27,7 +27,7 @@ export const getSlots = createAsyncThunk(
     try {
       const state = getState() as any;
       if (state.auth?.role && state.auth?.role === "connect_user") {
-        const response = await axios.get("/user/slots");
+        const response = await axios.get("/auth/slots");
         return response.data.rows;
       } else {
         const response = await axiosPrivate.get(`/parking/parkingslots`, {});

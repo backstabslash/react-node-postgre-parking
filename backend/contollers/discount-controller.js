@@ -22,9 +22,10 @@ class DiscountController {
   // get all discounts by username
   async getDiscountsByUsername(req, res) {
     const allDiscounts = await db(req.body.role).query(
-      `select discount_id, start_date, end_date, percentage from Discount d
-       inner join Users u on d.user_id = u.user_id
-       where u.username = $1`,
+      `select discount_id, start_date, end_date, percentage from discount d
+      inner join users u on d.user_id = u.user_id where u.username = $1
+      and (start_date <= now() and end_date >= now() or start_date <= now())
+      order by start_date desc limit 1;`,
       [req.params.username]
     );
     res.json(allDiscounts);

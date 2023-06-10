@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { register } from "../redux/auth";
 
-const USER_REGEX = /^[A-z0-9-_]{4,23}/;
+const USER_REGEX = /^[A-z0-9-_]{4,15}/;
 const PWD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
 const PHONE_REGEX = /^(\+\d{1,2}\s)\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
 const FULLNAME_REGEX = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
@@ -125,7 +125,7 @@ const Register = () => {
                     : "offScreen"
                 }
               >
-                Must be at least 4 characters long, may include _
+                Must be at least 4 characters long(&lt;15), may include _
               </p>
             </div>
             <div className="register-content__form__container">

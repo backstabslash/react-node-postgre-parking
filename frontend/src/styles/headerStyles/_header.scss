@@ -17,10 +17,11 @@
   margin: 0 auto;
 
   &__img {
-    width: 22rem;
+    width: 25rem;
+
     img {
-      width: 70%;
-      height: 70%;
+      width: 65%;
+      height: 65%;
     }
   }
 
@@ -50,11 +51,11 @@
 
   &__buttons {
     display: flex;
-    gap: 2.5rem;
+    gap: 2.1rem;
     font-size: $p-size;
     font-family: $text-font;
     font-weight: 700;
-    width: 22rem;
+    width: 25rem;
     align-items: center;
     justify-content: flex-end;
 
@@ -64,6 +65,7 @@
 
     &__sign-in {
       color: $text-black;
+      min-width: 6ch;
       cursor: pointer;
       transition: all 0.3s;
 
@@ -75,8 +77,10 @@
     &__register {
       background-color: $text-blue;
       color: $bg-gray;
-      padding: 1.5rem 3rem;
+      padding: 1.5rem 2.5rem;
       border-radius: 3px;
+      max-width: 21ch;
+      overflow: hidden;
       box-shadow: 0 10px 15px 0 rgb(3 129 245 / 35%);
       transition: all 0.3s;
 

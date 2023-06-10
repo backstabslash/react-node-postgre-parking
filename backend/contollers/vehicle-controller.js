@@ -51,20 +51,12 @@ class VehicleController {
   async putVehicleByID(req, res) {
     const { plate_number, brand, vehicle_category, vehicle_id } = req.body;
     try {
-      await db(req.body.role).query("begin");
-      await db(req.body.role).query(
-        "update Vehicle set plate_number = $1, brand = $2, vehicle_category = $3 where vehicle_id = $4",
+      const singleVehicle = await db(req.body.role).query(
+        "update Vehicle set plate_number = $1, brand = $2, vehicle_category = $3 where vehicle_id = $4 returning *",
         [plate_number, brand, vehicle_category, vehicle_id]
       );
-      const singleVehicle = await db(req.body.role).query(
-        "select * from Vehicle where vehicle_id = $1",
-        [vehicle_id]
-      );
-      await db(req.body.role).query("commit");
       res.json(singleVehicle);
     } catch (err) {
-      await db(req.body.role).query("rollback");
-      console.error(err);
       res.status(500).json({ error: "Failed to update vehicle." });
     }
   }

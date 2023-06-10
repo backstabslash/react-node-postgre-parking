@@ -59,7 +59,7 @@ function Book() {
     setWantedSlot("");
     setWantedVehicle("");
     setPhone(auth.phoneNumber || "");
-  }, [vehicleType]);
+  }, [vehicleType, modal]);
 
   useEffect(() => {
     if (auth.accessToken) {

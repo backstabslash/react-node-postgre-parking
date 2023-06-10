@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../../redux/hooks";
 import { useState, useEffect } from "react";
 import { updateUserByUsername } from "../../../redux/user";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 function UserPersonal() {
   const auth = useAppSelector((state) => state.auth);
@@ -17,11 +18,14 @@ function UserPersonal() {
   const [validPhoneNumber, setValidPhoneNumber] = useState(true);
   const [validFullName, setValidFullName] = useState(true);
   const [errorMsg, setErrorMsg] = useState("Fine Night");
+
   const USER_REGEX = /^[A-z0-9-_]{4,23}/;
   const PWD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
   const PHONE_REGEX = /^(\+\d{1,2}\s)\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
   const FULLNAME_REGEX = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
+
   const dispatch = new useDispatch();
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     setValidCurrPwd(PWD_REGEX.test(currPasswd));
@@ -97,16 +101,19 @@ function UserPersonal() {
 
   const handleUpdateDetails = (e) => {
     e.preventDefault();
-    dispatch(
-      updateUserByUsername({
-        username: auth.username,
-        new_username: username,
-        full_name: fullName,
-        phone_number: phoneNumber,
-        password: currPasswd,
-        new_password: newPasswd,
-      })
-    );
+    if (validUsername && validPhoneNumber && validFullName && validCurrPwd) {
+      dispatch(
+        updateUserByUsername({
+          axiosPrivate: axiosPrivate,
+          username: auth.username,
+          new_username: username,
+          full_name: fullName,
+          phone_number: phoneNumber,
+          password: currPasswd,
+          new_password: newPasswd,
+        })
+      );
+    }
   };
 
   return (
@@ -129,6 +136,7 @@ function UserPersonal() {
                   onChange={handleUsername}
                   type="text"
                   placeholder="Enter your username"
+                  disabled={true}
                 ></input>
               </span>
 

@@ -42,24 +42,10 @@ class UsersController {
 
   // update user by username
   async updateUserByUsername(req, res) {
-    const {
-      username,
-      new_username,
-      full_name,
-      phone_number,
-      password,
-      new_password,
-    } = req.body;
-
+    const { username, new_username, full_name, phone_number, password } =
+      req.body;
+    let { new_password } = req.body;
     if (new_password === "") new_password = password;
-    console.log(
-      username,
-      new_username,
-      full_name,
-      phone_number,
-      password,
-      new_password
-    );
     const updated = await db(req.body.role).query(
       `update Users set username = $1, full_name = $2, phone_number = $3, password = $4 where username = $5 and password = $6 
       returning username, full_name, phone_number`,
@@ -72,7 +58,6 @@ class UsersController {
         sha256(password),
       ]
     );
-    console.log(updated);
     res.json(updated);
   }
 

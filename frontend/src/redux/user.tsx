@@ -25,7 +25,7 @@ const initialState: UsersState = {
 };
 
 export const getUsers = createAsyncThunk(
-  "users/users",
+  "user/users",
   async (axiosPrivate: AxiosInstance, { rejectWithValue }) => {
     try {
       const response = await axiosPrivate.get("/user/users");
@@ -38,7 +38,7 @@ export const getUsers = createAsyncThunk(
 );
 
 export const updateUserByUsername = createAsyncThunk(
-  "users/updateuserbyusername",
+  "user/updateuserbyusername",
   async (
     data: {
       axiosPrivate: AxiosInstance;
@@ -54,18 +54,24 @@ export const updateUserByUsername = createAsyncThunk(
     const {
       axiosPrivate,
       username,
+      new_username,
       phone_number,
       full_name,
       password,
       new_password,
-      new_username,
     } = data;
     try {
       const response = await axiosPrivate.put(
-        `users/username/${encodeURIComponent(username)}`,
-        { username, phone_number, full_name, password, new_password }
+        `user/username/${encodeURIComponent(username)}`,
+        {
+          username,
+          new_username,
+          phone_number,
+          full_name,
+          password,
+          new_password,
+        }
       );
-      console.log(response);
       dispatch(updateUsername(new_username));
       dispatch(updatePhoneNumber(phone_number));
       dispatch(updateFullName(full_name));

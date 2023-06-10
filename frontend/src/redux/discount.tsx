@@ -71,6 +71,21 @@ export const discountSlice = createSlice({
       .addCase(getDiscounts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as number;
+      })
+      // getDiscountsByUsername
+      .addCase(getDiscountsByUsername.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getDiscountsByUsername.fulfilled, (state, action) => {
+        state.loading = false;
+        let discounts: DiscountState[] = [];
+        for (let discount of action.payload) discounts.push(discount);
+        state.discounts = discounts;
+      })
+      .addCase(getDiscountsByUsername.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
       });
   },
 });

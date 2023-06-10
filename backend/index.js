@@ -15,7 +15,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/user", require("./routes/auth-routes"));
+app.use("/auth", require("./routes/auth-routes"));
 app.use(verifyJWT);
 app.use("/user", require("./routes/users-routes"));
 app.use("/parking", require("./routes/parking-routes"));

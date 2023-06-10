@@ -13,7 +13,6 @@ class AuthController {
         [username, password, full_name, phone_number]
       );
     } catch (err) {
-      newUser = db("connect_user").query(`select reset_user_id_seq()`); // decrement user_id to fix serial sequence
       if (err.code == 23505)
         return res.status(409).json({ error: `${err.detail}` });
       // duplicate
@@ -44,7 +43,7 @@ class AuthController {
       );
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
-        maxAge: 12 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({
         accessToken,
