@@ -10,6 +10,14 @@
   background-blend-mode: multiply;
 }
 
+.bg_for_about {
+  background: url("../../images/faq/car.png") !important;
+  background-size: auto !important;
+  background-repeat: no-repeat !important;
+  background-position: 0 75% !important;
+  background-blend-mode: multiply !important;
+}
+
 .container .faq-content {
   display: flex;
   flex-direction: column;

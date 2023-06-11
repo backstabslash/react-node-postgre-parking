@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Faq() {
+function Faq({ bg = false }) {
   const [active, setActive] = useState("q1");
 
   const handleExpand = (id) => {
@@ -9,7 +9,7 @@ function Faq() {
 
   return (
     <>
-      <section className="faq-section">
+      <section className={`faq-section ${bg ? "bg_for_about" : ""}`}>
         <div className="container">
           <div className="imgContainer">
             <div className="faq-content">
