@@ -8,5 +8,6 @@ router.get("/sign_out", AuthController.signOutUser);
 router.get("/refresh", AuthController.userRefreshToken);
 router.get("/slots", AuthController.getParkingSlots);
 router.get("/bookings", AuthController.getBookings);
+router.get("/slots/date/:date", AuthController.getParkingSlotsByDate);
 
 module.exports = router;

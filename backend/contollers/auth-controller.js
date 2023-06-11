@@ -110,6 +110,29 @@ class AuthController {
     );
     res.json(allBookings);
   }
+
+  // get slots depending on chosen date
+  async getParkingSlotsByDate(req, res) {
+    const dateSlots = await db().query(
+      `select ps.slot_id, ps.vehicle_category, ps.price,
+      coalesce(
+        case when latest_booking.status in ('upcoming', 'ongoing')
+          then 'occupied'
+          else 'available'
+        end, 'available'
+      ) as status from parking_slot ps
+      left join (
+          select slot_id, status from booking_status
+          where (slot_id, start_date) in (
+            select slot_id, max(start_date) from booking_status
+            where status <> 'canceled' group by slot_id
+          )
+        and end_date > $1) 
+      latest_booking on ps.slot_id = latest_booking.slot_id;`,
+      [req.params.date]
+    );
+    res.json(dateSlots);
+  }
 }
 
 module.exports = new AuthController();

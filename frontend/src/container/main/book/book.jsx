@@ -12,6 +12,7 @@ function Book() {
   const auth = useAppSelector((state) => state.auth);
   const slots = useAppSelector((state) => state.slot);
   const bookings = useAppSelector((state) => state.booking.bookings);
+  const discount = useAppSelector((state) => state.discount.discounts);
   const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
 
@@ -22,7 +23,7 @@ function Book() {
   const [modal, setModal] = useState(false);
 
   const [vehicleType, setVehicleType] = useState("");
-  const [arrivalTime, setArrivalTime] = useState("");
+  const [arrivalTime, setArrivalTime] = useState("01.01.2000");
   const [departureTime, setDepartureTime] = useState("");
   const [vehicleImg, setVehicleImg] = useState("");
 
@@ -51,9 +52,23 @@ function Book() {
       );
       setProperVehicles(properVehicles);
     }
-    const properSlots = slots.slots.filter(
-      (slot) => slot.vehicle_category === vehicleType
-    );
+    const fetchData = async () => {
+      try {
+        const dateSlots = await axiosPrivate.get(
+          `/auth/slots/date/${encodeURIComponent(arrivalTime)}`
+        );
+        const properSlots = dateSlots.data.rows.filter(
+          (slot) => slot.vehicle_category === vehicleType
+        );
+        setProperSlots(properSlots);
+      } catch (error) {
+        const properSlots = slots.slots.filter(
+          (slot) => slot.vehicle_category === vehicleType
+        );
+        setProperSlots(properSlots);
+      }
+    };
+    fetchData();
     setProperSlots(properSlots);
     setTotalPrice(0);
     setWantedSlot("");
@@ -65,13 +80,19 @@ function Book() {
     if (auth.accessToken) {
       if (wantedSlot !== "") {
         const slot = slots.slots.filter((slot) => slot.slot_id === wantedSlot);
-        setTotalPrice(
+        let price =
           ((Date.parse(departureTime) - Date.parse(arrivalTime)) / 86400000) *
-            slot[0].price
-        );
+          slot[0].price;
+        if (discount?.length > 0) {
+          if (Date.parse(discount[0]?.end_date) >= Date.now()) {
+            const discountAmount = (price * discount[0]?.percentage) / 100;
+            price -= discountAmount;
+          }
+        }
+        setTotalPrice(price);
       } else setTotalPrice(0);
     }
-  }, [wantedSlot]);
+  }, [wantedSlot, discount?.length]);
 
   const handleWantedVehicle = (e) => {
     setWantedVehicle(e.target.value);

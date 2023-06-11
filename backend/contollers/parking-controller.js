@@ -13,7 +13,7 @@ class ParkingSlotController {
 
   // get all slots
   async getParkingSlots(req, res) {
-    const allSlots = await db("connect_user").query(
+    const allSlots = await db().query(
       `select * from slot_status order by slot_id`
     );
     res.json(allSlots);

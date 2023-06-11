@@ -12,7 +12,7 @@ import Contact from "./components/contact";
 import Profile from "./components/profile";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getClientBookings } from "./redux/booking";
+import { getClientBookings, getGuestBookings } from "./redux/booking";
 import { getSlots } from "./redux/slot";
 import { useAppDispatch } from "./redux/hooks";
 import { getVehiclesByUsername } from "./redux/vehicle";
@@ -25,6 +25,7 @@ function App() {
   const axiosPrivate = useAxiosPrivate();
   useEffect(() => {
     dispatch(getSlots(axiosPrivate));
+    dispatch(getGuestBookings(axiosPrivate));
   }, []);
 
   useEffect(() => {
