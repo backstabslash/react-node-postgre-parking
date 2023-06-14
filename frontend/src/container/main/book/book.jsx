@@ -281,7 +281,7 @@ function Book() {
         <div className="container">
           <div className="book-content">
             <div className="book-content__box">
-              <h2>Book a Slot</h2>
+              <h2>New Booking</h2>
               <p className="error-message-empty">
                 All fields are required!{" "}
                 <i onClick={hideMessage} className="fa-solid fa-xmark"></i>
