@@ -75,7 +75,7 @@
 .personal-btns {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   svg {
     width: 1.6rem;
     height: 1.6rem;
@@ -575,4 +575,126 @@
       }
     }
   }
+}
+
+// admin
+.user-search-input {
+  padding: 1.4rem 1.5rem;
+  font-family: $text-font;
+  background-color: #ffffff;
+  border-radius: 3px;
+  border: 1px solid #ccd7e6;
+  color: $text-black;
+  font-size: 1.5rem;
+  font-weight: 400;
+  outline: none;
+}
+
+.users-admin-btns {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.profile-users-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccd7e6;
+  gap: 1rem;
+  font-size: 1.6rem;
+  font-family: $text-font;
+  font-weight: 700;
+  padding: 1.4rem 1.5rem;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #3f3f46;
+  transition: all 0.3s;
+
+  svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 0 !important;
+  }
+}
+
+.no-bookings {
+  font-size: $h3-size;
+  font-family: $text-font;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.date-width {
+  width: 100% !important;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: $p-size;
+  font-family: $text-font;
+  font-weight: 700;
+  text-align: center;
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  border: 1px solid #ccd7e6;
+  font-weight: 400;
+}
+
+.table th {
+  background-color: rgba(82, 82, 91, 1);
+  color: $bg-white;
+  font-weight: bold;
+}
+
+.table tr {
+  width: 30ch;
+}
+
+.pagination-current {
+  padding: 1.4rem 1.5rem;
+  font-size: $p-size;
+  border-radius: 3px;
+  background-color: rgba(82, 82, 91, 1);
+  color: $bg-white;
+  border: none;
+}
+
+.stats-text {
+  padding: 1.4rem 1.5rem;
+  font-family: $text-font;
+  background-color: #ffffff;
+  border-radius: 3px;
+  border: 1px solid #ccd7e6;
+  color: $text-black;
+  font-size: 1.5rem;
+  width: 10ch;
+  font-weight: 400;
+  text-align: center;
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .table th,
+  .table td {
+    display: table-cell;
+  }
+}
+
+.table-last-column {
+  width: 30%; /* Adjust the width as needed */
 }

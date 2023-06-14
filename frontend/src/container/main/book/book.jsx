@@ -184,6 +184,8 @@ function Book() {
           vehicle_id,
           slot_id,
           amount_due: totalPrice,
+          amount_paid: 0,
+          remarks: "",
         })
       )
         .unwrap()

@@ -87,14 +87,17 @@ export const postVehicle = createAsyncThunk(
       vehicle_category: string;
       brand: string;
       plate_number: string;
+      username: string | null;
     },
     { rejectWithValue, getState }
   ) => {
     const { axiosPrivate, vehicle_category, brand, plate_number } = data;
+    let { username } = data;
     const state = getState() as any;
+    if (!username) username = state.auth.username;
     try {
       const response = await axiosPrivate.post("/vehicle/vehicle", {
-        username: state.auth.username,
+        username,
         plate_number,
         brand,
         vehicle_category,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAppSelector } from "../../../redux/hooks";
 import { useDispatch } from "react-redux";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import booking, { updateBookingById } from "../../../redux/booking";
+import { deleteBookingById, updateBookingById } from "../../../redux/booking";
 
 const BookingsList = ({ bookings }) => {
   const vehicles = useAppSelector((state) => state.vehicle);
@@ -18,6 +18,7 @@ const BookingsList = ({ bookings }) => {
   const [startDate, setStartDate] = useState("");
   const [amountDue, setAmountDue] = useState("");
   const [amountPaid, setAmountPaid] = useState("");
+  const [properSlots, setProperSlots] = useState([]);
 
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
@@ -34,11 +35,38 @@ const BookingsList = ({ bookings }) => {
         );
       if (slots.slots.length > 0) {
         setSlotNo(
-          slots.slots?.findIndex(
+          slots.slots?.find(
             (slot) => slot.slot_id === bookings[currentPage]?.slot_id
-          ) ?? ""
+          )?.slot_id ?? ""
         );
       }
+      const fetchData = async () => {
+        try {
+          const dateSlots = await axiosPrivate.get(
+            `/auth/slots/date/${encodeURIComponent(startDate)}`
+          );
+          const properSlots = dateSlots.data.rows.filter(
+            (slot) =>
+              slot.vehicle_category ===
+                vehicles.vehicles?.find(
+                  (vehicle) =>
+                    vehicle.vehicle_id === bookings[currentPage]?.vehicle_id
+                )?.vehicle_category || ""
+          );
+          setProperSlots(properSlots);
+        } catch (error) {
+          const properSlots = slots.slots.filter(
+            (slot) =>
+              slot.vehicle_category ===
+                vehicles.vehicles?.find(
+                  (vehicle) =>
+                    vehicle.vehicle_id === bookings[currentPage]?.vehicle_id
+                )?.plate_number || ""
+          );
+          setProperSlots(properSlots);
+        }
+      };
+      fetchData();
       setAmountDue(bookings[currentPage].amount_due || "");
       setAmountPaid(bookings[currentPage].amount_paid ?? "");
       setStartDate(bookings[currentPage].start_date || "");
@@ -66,8 +94,17 @@ const BookingsList = ({ bookings }) => {
         status,
         amount_due: amountDue,
         amount_paid: amountPaid,
+        slot_id: slotNo,
         remarks,
-        slot_id: bookings[currentPage].slot_id,
+        booking_id: bookings[currentPage].booking_id,
+      })
+    );
+  };
+
+  const handleDeleteBooking = () => {
+    dispatch(
+      deleteBookingById({
+        axiosPrivate,
         booking_id: bookings[currentPage].booking_id,
       })
     );
@@ -94,8 +131,37 @@ const BookingsList = ({ bookings }) => {
       setEndDate(e.target.value);
   };
 
+  const handleSlotNo = (e) => {
+    setSlotNo(e.target.value);
+  };
+
   const handleRemarks = (e) => {
     setRemarks(e.target.value);
+  };
+
+  const handleAmountPaid = (e) => {
+    setAmountPaid(e.target.value);
+  };
+
+  const getSlots = () => {
+    let i = 1;
+    return properSlots.map((slot) => {
+      return (
+        <option
+          value={slot.slot_id}
+          key={slot.slot_id}
+          disabled={slot.status === "available" ? false : true}
+        >
+          {"Position: " +
+            i++ +
+            " Price: " +
+            slot.price +
+            " ₴" +
+            " Status: " +
+            slot.status}
+        </option>
+      );
+    });
   };
 
   return (
@@ -108,7 +174,19 @@ const BookingsList = ({ bookings }) => {
           </span>
           <span className="bookings-list-elem-data">
             <label>Slot Nubmer</label>
-            <input value={slotNo} type="text" disabled={true}></input>
+            <select
+              value={slotNo}
+              onChange={handleSlotNo}
+              disabled={
+                status === "completed" || status === "canceled" ? true : false
+              }
+              className="veh-type-select"
+            >
+              <option value="" disabled={true}>
+                Select parking slot
+              </option>
+              {getSlots()}
+            </select>
           </span>
           <span className="bookings-list-elem-data">
             <label>Start Date</label>
@@ -131,7 +209,14 @@ const BookingsList = ({ bookings }) => {
           </span>
           <span className="bookings-list-elem-data">
             <label>Amount Paid</label>
-            <input value={amountPaid} type="text" disabled={true}></input>
+            <input
+              value={amountPaid}
+              type="text"
+              onChange={handleAmountPaid}
+              disabled={
+                status === "completed" || status === "canceled" ? true : false
+              }
+            ></input>
           </span>
           <span className="bookings-list-elem-data">
             <label>Status</label>
@@ -193,6 +278,12 @@ const BookingsList = ({ bookings }) => {
           onClick={handleUpdateDetails}
         >
           Update Details
+        </button>
+        <button
+          className="booking-btns-btn booking-blue-btn"
+          onClick={handleDeleteBooking}
+        >
+          Delete Booking
         </button>
         <button
           onClick={goToNextPage}

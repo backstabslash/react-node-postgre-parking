@@ -1,3 +1,4 @@
+import UsersAdmin from "../container/admin-page/user-controller/users";
 import Footer from "../container/footer/footer";
 import UserBookings from "../container/user-page/bookings/bookings";
 import UserPersonal from "../container/user-page/personal/personal";
@@ -9,19 +10,21 @@ function Profile() {
   const auth = useAppSelector((state) => state.auth);
   return (
     <section className="profile">
-      <UserPersonal />
       {auth.role === "client" ? (
         <>
+          <UserPersonal />
           <UserStats />
           <UserVehicles />
           <UserBookings />
         </>
       ) : auth.role === "administrator" ? (
-        <>{/* Administrator-specific component(s) */}</>
+        <>
+          <UsersAdmin />
+        </>
       ) : (
         <></>
       )}
-      <Footer />
+      <Footer bg={true} />
     </section>
   );
 }

@@ -1,7 +1,7 @@
-function Footer() {
+function Footer({ bg = false }) {
   return (
     <>
-      <footer>
+      <footer style={{ backgroundColor: `${bg && "transparent"}` }}>
         <div className="container">
           <div className="footer-content">
             <ul className="footer-content__1">

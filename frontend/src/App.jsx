@@ -12,12 +12,17 @@ import Contact from "./components/contact";
 import Profile from "./components/profile";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getClientBookings, getGuestBookings } from "./redux/booking";
+import {
+  getAllBookings,
+  getClientBookings,
+  getGuestBookings,
+} from "./redux/booking";
 import { getSlots } from "./redux/slot";
 import { useAppDispatch } from "./redux/hooks";
-import { getVehiclesByUsername } from "./redux/vehicle";
-import { getDiscountsByUsername } from "./redux/discount";
+import { getVehicles, getVehiclesByUsername } from "./redux/vehicle";
+import { getDiscounts, getDiscountsByUsername } from "./redux/discount";
 import useAxiosPrivate from "./hooks/useAxiosPrivate";
+import { getUsers } from "./redux/user";
 
 function App() {
   const auth = useSelector((state) => state.auth);
@@ -29,10 +34,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (auth.role !== "connect_user") {
+    if (auth.role === "client") {
       dispatch(getClientBookings(axiosPrivate));
       dispatch(getVehiclesByUsername(axiosPrivate));
       dispatch(getDiscountsByUsername(axiosPrivate));
+    }
+    if (auth.role === "administrator") {
+      dispatch(getAllBookings(axiosPrivate));
+      dispatch(getVehicles(axiosPrivate));
+      dispatch(getUsers(axiosPrivate));
+      dispatch(getDiscounts(axiosPrivate));
     }
   }, [auth.role]);
 
@@ -49,7 +60,7 @@ function App() {
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/team" element={<Team />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile*" element={<Profile />} />
           </Route>
         </Routes>
       </div>

@@ -8,11 +8,12 @@ class BookingController {
       slot_id,
       start_date,
       end_date,
-      status = "ongoing",
       amount_due,
-      amount_paid = 0,
-      remarks = "",
+      amount_paid,
+      remarks,
     } = req.body;
+    let { status = "ongoing" } = req.body;
+    if (Date.parse(start_date) > Date.now() + 8640000) status = "upcoming";
     const newBooking = await db(req.body.role).query(
       `insert into Booking (vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks) values ($1, $2, $3, $4, $5, $6, $7, $8) returning *`,
       [
@@ -96,10 +97,11 @@ class BookingController {
 
   // delete booking by id
   async deleteBookingByID(req, res) {
-    db(req.body.role).query(
-      `delete from Booking where Booking.booking_id = $1`,
-      [req.body.booking_id]
+    const deletedBooking = await db(req.body.role).query(
+      `delete from Booking where booking_id = $1 returning booking_id`,
+      [req.params.id]
     );
+    res.json(deletedBooking);
   }
 
   // update whole booking by id
@@ -111,10 +113,11 @@ class BookingController {
       amount_due,
       amount_paid,
       remarks,
+      slot_id,
       booking_id,
     } = req.body;
     const updateBooking = await db(req.body.role).query(
-      `update Booking set start_date = $1, end_date = $2, status = $3, amount_due = $4, amount_paid = $5, remarks = $6 where Booking.booking_id = $7 returning *`,
+      `update Booking set start_date = $1, end_date = $2, status = $3, amount_due = $4, amount_paid = $5, remarks = $6, slot_id = $7 where Booking.booking_id = $8 returning *`,
       [
         start_date,
         end_date,
@@ -122,10 +125,55 @@ class BookingController {
         amount_due,
         amount_paid,
         remarks,
+        slot_id,
         booking_id,
       ]
     );
     res.json(updateBooking);
+  }
+
+  async getCanceledAllPercentage(req, res) {
+    const percentage = await db(req.body.role).query(
+      `select round(100 - (sum(case when status = 'canceled' then 1 else 0 end) * 100.0 / 
+   (count(*) - sum(case when status = 'canceled' then 1 else 0 end))), 4) as cancellation_percentage from booking`
+    );
+    res.json(percentage);
+  }
+
+  async getAvgParkingDays(req, res) {
+    const days = await db(req.body.role).query(
+      `select round(avg(end_date - start_date), 4) as average_parking_duration from booking where status <> 'canceled';`
+    );
+    res.json(days);
+  }
+
+  async getDatesIncome(req, res) {
+    const income = await db(req.body.role).query(
+      `select sum(amount_due) as total_amount from booking 
+      where start_date >= $1 and end_date <= $2;`,
+      [req.params.start, req.params.end]
+    );
+    res.json(income);
+  }
+
+  async getDatesBookings(req, res) {
+    const bookings = await db(req.body.role).query(
+      `select count(*) as booking_count from booking
+      where start_date >= $1 and start_date <= $2;`,
+      [req.params.start, req.params.end]
+    );
+    res.json(bookings);
+  }
+
+  async getDatesPopVehCat(req, res) {
+    const vehCat = await db(req.body.role).query(
+      `select parking_slot.vehicle_category, count(*) as bookings_count from booking
+      join parking_slot on booking.slot_id = parking_slot.slot_id
+      where booking.start_date >= $1 and booking.end_date <= $2
+      group by parking_slot.vehicle_category order by bookings_count desc;`,
+      [req.params.start, req.params.end]
+    );
+    res.json(vehCat);
   }
 }
 

@@ -34,6 +34,29 @@ const initialState: BookingsState = {
   error: null,
 };
 
+export const deleteBookingById = createAsyncThunk(
+  "vehicle/deletebookingbyid",
+  async (
+    data: {
+      axiosPrivate: AxiosInstance;
+      booking_id: number;
+    },
+    { rejectWithValue }
+  ) => {
+    const { axiosPrivate, booking_id } = data;
+    try {
+      const response = await axiosPrivate.delete(
+        `/booking/id/${encodeURIComponent(booking_id)}`,
+        {}
+      );
+      return booking_id;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
 export const getGuestBookings = createAsyncThunk(
   "booking/guestbookings",
   async (_, { rejectWithValue }) => {
@@ -64,6 +87,19 @@ export const getClientBookings = createAsyncThunk(
   }
 );
 
+export const getAllBookings = createAsyncThunk(
+  "booking/allbookings",
+  async (axiosPrivate: AxiosInstance, { rejectWithValue }) => {
+    try {
+      const response = await axiosPrivate.get(`/booking/bookings`, {});
+      return response.data.rows;
+    } catch (err) {
+      const error = err as AxiosError;
+      return rejectWithValue(error.response?.status);
+    }
+  }
+);
+
 export const postBooking = createAsyncThunk(
   "booking/postbooking",
   async (
@@ -74,6 +110,7 @@ export const postBooking = createAsyncThunk(
       vehicle_id: number;
       slot_id: number;
       amount_due: number;
+      amount_paid: number;
     },
     { rejectWithValue }
   ) => {
@@ -83,6 +120,7 @@ export const postBooking = createAsyncThunk(
       end_date,
       vehicle_id,
       amount_due,
+      amount_paid,
       slot_id,
     } = data;
     try {
@@ -91,6 +129,7 @@ export const postBooking = createAsyncThunk(
         end_date,
         vehicle_id,
         amount_due,
+        amount_paid,
         slot_id,
       });
       return response.data.rows;
@@ -111,6 +150,7 @@ export const updateBookingById = createAsyncThunk(
       status: string;
       amount_due: number;
       amount_paid: number;
+      slot_id: number | null;
       remarks: string;
       booking_id: number;
     },
@@ -125,6 +165,7 @@ export const updateBookingById = createAsyncThunk(
       amount_paid,
       remarks,
       booking_id,
+      slot_id,
     } = data;
     try {
       const response = await axiosPrivate.put(
@@ -136,6 +177,7 @@ export const updateBookingById = createAsyncThunk(
           amount_due,
           amount_paid,
           remarks,
+          slot_id,
           booking_id,
         }
       );
@@ -153,6 +195,24 @@ export const bookingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // deleteBookingById
+      .addCase(deleteBookingById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteBookingById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        const deletedBookingId = action.payload;
+        state.bookings =
+          state.bookings?.filter(
+            (booking) => booking.booking_id !== deletedBookingId
+          ) || [];
+      })
+      .addCase(deleteBookingById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      })
       // postBooking
       .addCase(postBooking.pending, (state) => {
         state.loading = true;
@@ -220,6 +280,29 @@ export const bookingSlice = createSlice({
         state.bookings = bookings;
       })
       .addCase(getClientBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as number;
+      })
+      //getAllBookings
+      .addCase(getAllBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        let bookings: BookingState[] = [];
+        for (let booking of action.payload) {
+          let start_date = new Date(booking.start_date.substring(0, 10));
+          let end_date = new Date(booking.end_date.substring(0, 10));
+          start_date.setDate(start_date.getDate() + 1);
+          end_date.setDate(end_date.getDate() + 1);
+          booking.start_date = start_date.toISOString().substring(0, 10);
+          booking.end_date = end_date.toISOString().substring(0, 10);
+          bookings.push(booking);
+        }
+        state.bookings = bookings;
+      })
+      .addCase(getAllBookings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as number;
       })

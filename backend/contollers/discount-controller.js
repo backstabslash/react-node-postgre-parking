@@ -5,7 +5,7 @@ class DiscountController {
   async createDiscount(req, res) {
     const { user_id, percentage, start_date, end_date } = req.body;
     const newDiscount = await db(req.body.role).query(
-      `insert into Discount (user_id, percentage, start_date, end_date) values ($1, $2, $3, $4)`,
+      `insert into Discount (user_id, percentage, start_date, end_date) values ($1, $2, $3, $4) returning *`,
       [user_id, percentage, start_date, end_date]
     );
     res.json(newDiscount);
@@ -42,18 +42,19 @@ class DiscountController {
 
   // delete discount by id
   async deleteDiscountbyID(req, res) {
-    db(req.body.role).query(
-      `delete from Discount where Discount.discount_id = $1`,
-      [req.body.discount_id]
+    const deletedBooking = await db(req.body.role).query(
+      `delete from Discount where Discount.discount_id = $1 returning *`,
+      [req.params.id]
     );
+    res.json(deletedBooking);
   }
 
   // update whole discount by id
   async putDiscountByID(req, res) {
-    const { user_id, percentage, start_date, end_date, discount_id } = req.body;
+    const { percentage, start_date, end_date, discount_id } = req.body;
     db(req.body.role).query(
-      `update Discount set user_id = $1, percentage = $2, start_date = $3, end_date = $4 where Discount.discount_id = $5`,
-      [user_id, percentage, start_date, end_date, discount_id]
+      `update Discount set percentage = $1, end_date = $2 where Discount.discount_id = $3 returning *`,
+      [percentage, end_date, discount_id]
     );
   }
 }

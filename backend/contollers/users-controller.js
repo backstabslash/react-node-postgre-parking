@@ -2,6 +2,23 @@ const db = require("../db-config");
 const sha256 = require("sha256");
 
 class UsersController {
+  // post user
+  async postUser(req, res) {
+    const { username, password, full_name, phone_number } = req.body;
+    try {
+      const newUser = await db("connect_user").query(
+        `insert into Users (username, password, full_name, phone_number) values ($1, $2, $3, $4) returning *`,
+        [username, password, full_name, phone_number]
+      );
+      res.status(201).json(newUser);
+    } catch (err) {
+      if (err.code == 23505)
+        return res.status(409).json({ error: `${err.detail}` });
+      // duplicate
+      else return res.status(400).json({ error: "bad request" }); // bad request
+    }
+  }
+
   // get all users
   async getUsers(req, res) {
     const allUsers = await db(req.body.role).query(`select * from Users`);
@@ -28,9 +45,24 @@ class UsersController {
 
   // delete user by id
   async deleteUserByID(req, res) {
-    db(req.body.role).query(`delete from Users where Users.user_id = $1`, [
-      req.body.user_id,
-    ]);
+    const response = await db(req.body.role).query(
+      `with deleted_bookings as (
+      delete from booking where vehicle_id in (
+      select vehicle_id from vehicle where user_id = $1
+      ) returning *
+      ), deleted_discounts as (
+      delete from discount where user_id = $1
+      returning *
+      ),
+      deleted_vehicles as (
+      delete from vehicle where user_id = $1
+      returning *
+      )
+      delete from users
+      where user_id = $1 returning *;`,
+      [req.params.id]
+    );
+    res.json(response);
   }
 
   // delete user by username
@@ -57,6 +89,18 @@ class UsersController {
         username,
         sha256(password),
       ]
+    );
+    res.json(updated);
+  }
+
+  // update user by id (for admin)
+  async updateUserById(req, res) {
+    const { full_name, phone_number, new_password, category, user_id } =
+      req.body;
+    const updated = await db(req.body.role).query(
+      `update Users set full_name = $1, phone_number = $2, password = $3, category = $4 where user_id = $5
+      returning *`,
+      [full_name, phone_number, new_password, category, user_id]
     );
     res.json(updated);
   }
