@@ -23,6 +23,10 @@
     flex-direction: column;
     color: $text-black;
 
+    // @media (max-width: 630px) {
+    //   margin-top: 3rem;
+    // }
+
     h2 {
       font-size: $h3-size;
       font-weight: 700;
