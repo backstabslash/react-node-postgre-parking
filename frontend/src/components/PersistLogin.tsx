@@ -28,7 +28,19 @@ const PersistLogin = () => {
     };
   }, []);
 
-  return <>{isLoading ? <p>Loading...</p> : <Outlet />}</>;
+  return (
+    <>
+      {isLoading ? (
+        <div className="loading-container">
+          <div className="loading-placeholder">
+            <p className="loading-text">Loading...</p>
+          </div>
+        </div>
+      ) : (
+        <Outlet />
+      )}
+    </>
+  );
 };
 
 export default PersistLogin;

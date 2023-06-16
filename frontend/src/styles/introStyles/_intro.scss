@@ -168,3 +168,41 @@
 .show-scroll {
   display: flex;
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-placeholder {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: $bg-gray;
+  border-radius: 50%;
+  animation: loading-animation 1s infinite ease-in-out;
+}
+
+.loading-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: $text-black;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+@keyframes loading-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
