@@ -1,0 +1,721 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.1
+-- Dumped by pg_dump version 15.1
+
+-- Started on 2023-11-01 20:44:24
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2 (class 3079 OID 17743)
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- TOC entry 3411 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
+-- TOC entry 859 (class 1247 OID 17735)
+-- Name: vehicle_category; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.vehicle_category AS ENUM (
+    'Motorcycle',
+    'Car',
+    'Bus',
+    'Truck'
+);
+
+
+ALTER TYPE public.vehicle_category OWNER TO postgres;
+
+--
+-- TOC entry 246 (class 1255 OID 17905)
+-- Name: calculate_booking_price(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calculate_booking_price() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+  add_amount int;
+  mindate date;
+  maxdate date;
+begin
+  if exists (
+    select d.discount_id from discount d
+    inner join vehicle v on v.vehicle_id = new.vehicle_id
+    inner join users c on c.user_id = v.user_id
+    where d.user_id = c.user_id and d.end_date >= now()
+  ) then
+    select case when new.end_date < d.end_date then new.end_date else d.end_date end into mindate
+    from discount d
+    inner join vehicle v on v.vehicle_id = new.vehicle_id
+    inner join users c on c.user_id = v.user_id
+    where d.user_id = c.user_id and d.end_date >= now();
+    
+    select case when new.start_date < d.start_date then d.start_date else new.start_date end into maxdate 
+    from discount d
+    inner join vehicle v on v.vehicle_id = new.vehicle_id
+    inner join users c on c.user_id = v.user_id
+    where d.user_id = c.user_id and d.end_date >= now();
+  end if;
+  
+  if (mindate - maxdate) >= 0 then
+    select ((mindate - maxdate) * ps.price * (1 - (d.percentage + 0.0) / 100)) + ((new.end_date - new.start_date) - (mindate - maxdate)) * ps.price into add_amount
+    from vehicle v
+    inner join users c on c.user_id = v.user_id
+    inner join discount d on d.user_id = c.user_id
+    inner join parking_slot ps on ps.slot_id = new.slot_id
+    where v.vehicle_id = new.vehicle_id and d.end_date >= current_date;
+  else
+    select ps.price * (new.end_date - new.start_date) into add_amount
+    from parking_slot ps
+    where ps.slot_id = new.slot_id;
+  end if;
+  
+  new.amount_due := add_amount;
+  
+  return new;
+end; 
+$$;
+
+
+ALTER FUNCTION public.calculate_booking_price() OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1255 OID 17843)
+-- Name: encrypt_password(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.encrypt_password() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+  new.password := encode(sha256(new.password::bytea), 'hex');
+  return new;
+end
+$$;
+
+
+ALTER FUNCTION public.encrypt_password() OWNER TO postgres;
+
+--
+-- TOC entry 234 (class 1255 OID 17865)
+-- Name: encrypt_password_update(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.encrypt_password_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+  if new.password is distinct from old.password then
+    new.password := encode(sha256(new.password::bytea), 'hex');
+  end if;
+  return new;
+end
+$$;
+
+
+ALTER FUNCTION public.encrypt_password_update() OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1255 OID 17891)
+-- Name: recalculate_payment(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.recalculate_payment() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+prev_amount int;
+new_start date;
+new_end date;
+add_amount int;
+mindate date;
+maxdate date;
+begin
+    select new.amount_due into prev_amount;
+    select old.end_date into new_start;
+    select new.end_date into new_end;
+    
+    if exists 
+        (select d.discount_id from Discount d
+        inner join Vehicle v on v.vehicle_id = new.vehicle_id
+        inner join Users c on c.user_id = v.user_id
+        where d.user_id = c.user_id and d.end_date >= now())
+    then
+        select case when new_end < d.end_date then new_end else d.end_date end into mindate
+        from Discount d
+        inner join Vehicle v on v.vehicle_id = new.vehicle_id
+        inner join Users c on c.user_id = v.user_id
+        where d.user_id = c.user_id and d.end_date >= now();
+        select case when new_start < d.start_date then d.start_date else new_start end into maxdate 
+        from Discount d
+        inner join Vehicle v on v.vehicle_id = new.vehicle_id
+        inner join Users c on c.user_id = v.user_id
+        where d.user_id = c.user_id and d.end_date >= now();
+    end if;
+    
+    if (mindate - maxdate) >= 0
+    then
+        select ((mindate - maxdate) * ps.price * (1 - (d.percentage + 0.0) / 100)) + ((new_end - new_start) - (mindate - maxdate)) * ps.price into add_amount
+        from Booking b
+        inner join Vehicle v on v.vehicle_id = b.vehicle_id
+        inner join Users c on c.user_id = v.user_id
+        inner join Discount d on d.user_id = c.user_id
+        inner join Parking_Slot ps on ps.slot_id = b.slot_id
+        where b.booking_id = new.booking_id and d.end_date > current_date;
+    else select ps.price * (new_end - new_start) into add_amount from Parking_Slot ps
+    where ps.slot_id = new.slot_id;
+    end if;
+    
+    new.amount_due = prev_amount + add_amount;
+    
+    return new;
+end; 
+$$;
+
+
+ALTER FUNCTION public.recalculate_payment() OWNER TO postgres;
+
+--
+-- TOC entry 232 (class 1255 OID 17927)
+-- Name: update_parking_status(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_parking_status() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+  if tg_op = 'delete' or (tg_op = 'update' and new.status = 'canceled') then
+    update parking_slot
+    set status = 'available'
+    where slot_id = old.slot_id;
+  end if;
+
+  return null;
+end;
+$$;
+
+
+ALTER FUNCTION public.update_parking_status() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 219 (class 1259 OID 17823)
+-- Name: booking; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.booking (
+    booking_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    vehicle_id uuid NOT NULL,
+    slot_id uuid NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    status character varying(10) NOT NULL,
+    amount_due integer NOT NULL,
+    amount_paid integer NOT NULL,
+    remarks character varying(250),
+    CONSTRAINT booking_amount_due_check CHECK ((amount_due >= 0)),
+    CONSTRAINT booking_amount_paid_check CHECK ((amount_paid >= 0)),
+    CONSTRAINT booking_check CHECK ((end_date > start_date)),
+    CONSTRAINT booking_status_check CHECK (((status)::text = ANY ((ARRAY['upcoming'::character varying, 'ongoing'::character varying, 'completed'::character varying, 'canceled'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.booking OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 17917)
+-- Name: booking_status; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.booking_status AS
+ SELECT booking.booking_id,
+    booking.vehicle_id,
+    booking.slot_id,
+    booking.start_date,
+    booking.end_date,
+    booking.amount_due,
+    booking.remarks,
+        CASE
+            WHEN ((booking.status)::text = 'canceled'::text) THEN 'canceled'::text
+            WHEN (booking.start_date > now()) THEN 'upcoming'::text
+            WHEN ((booking.start_date <= now()) AND (booking.end_date >= now())) THEN 'ongoing'::text
+            ELSE 'completed'::text
+        END AS status,
+        CASE
+            WHEN ((booking.start_date <= now()) AND (booking.end_date <= now())) THEN booking.amount_due
+            ELSE booking.amount_paid
+        END AS amount_paid
+   FROM public.booking;
+
+
+ALTER TABLE public.booking_status OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 17790)
+-- Name: discount; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.discount (
+    discount_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    percentage integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    CONSTRAINT discount_end_date_check CHECK ((end_date > CURRENT_DATE)),
+    CONSTRAINT discount_start_date_check CHECK ((start_date >= CURRENT_DATE))
+);
+
+
+ALTER TABLE public.discount OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 17815)
+-- Name: parking_slot; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.parking_slot (
+    slot_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    vehicle_category public.vehicle_category NOT NULL,
+    price integer NOT NULL,
+    status character varying(10) NOT NULL,
+    CONSTRAINT parking_slot_price_check CHECK ((price >= 0)),
+    CONSTRAINT parking_slot_status_check CHECK (((status)::text = ANY ((ARRAY['available'::character varying, 'occupied'::character varying, 'reserved'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.parking_slot OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 17922)
+-- Name: slot_status; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.slot_status AS
+ SELECT ps.slot_id,
+    ps.vehicle_category,
+    ps.price,
+    COALESCE(
+        CASE latest_booking.status
+            WHEN 'upcoming'::text THEN 'reserved'::text
+            WHEN 'ongoing'::text THEN 'occupied'::text
+            ELSE NULL::text
+        END, 'available'::text) AS status
+   FROM (public.parking_slot ps
+     LEFT JOIN ( SELECT booking_status.slot_id,
+            booking_status.status
+           FROM public.booking_status
+          WHERE ((booking_status.slot_id, booking_status.start_date) IN ( SELECT booking_status_1.slot_id,
+                    max(booking_status_1.start_date) AS max
+                   FROM public.booking_status booking_status_1
+                  GROUP BY booking_status_1.slot_id))) latest_booking ON ((ps.slot_id = latest_booking.slot_id)));
+
+
+ALTER TABLE public.slot_status OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 17776)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    user_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    username character varying(30) NOT NULL,
+    password character varying(255) NOT NULL,
+    full_name character varying(50) NOT NULL,
+    phone_number character varying(20) NOT NULL,
+    category character varying(15) DEFAULT 'client'::character varying NOT NULL,
+    CONSTRAINT phonerule CHECK (((phone_number)::text ~ similar_to_escape('(\+\d{1,2}\s)\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}'::text))),
+    CONSTRAINT users_category_check CHECK (((category)::text = ANY ((ARRAY['administrator'::character varying, 'client'::character varying])::text[]))),
+    CONSTRAINT users_full_name_check CHECK ((length((full_name)::text) >= 10))
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 17803)
+-- Name: vehicle; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vehicle (
+    vehicle_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    plate_number character varying(8) NOT NULL,
+    brand character varying(20) NOT NULL,
+    vehicle_category public.vehicle_category NOT NULL,
+    CONSTRAINT platerule CHECK (((plate_number)::text ~ similar_to_escape('[A-Z]{2}[0-9]{4}[A-Z]{2}'::text)))
+);
+
+
+ALTER TABLE public.vehicle OWNER TO postgres;
+
+--
+-- TOC entry 3404 (class 0 OID 17823)
+-- Dependencies: 219
+-- Data for Name: booking; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.booking (booking_id, vehicle_id, slot_id, start_date, end_date, status, amount_due, amount_paid, remarks) FROM stdin;
+a3c80bee-9fa1-47d7-b876-5d0dfb3e6a67	eb3d28cf-051b-455c-9a7d-ea715c76ae01	0c239510-e451-4edd-a85e-ec747c84bdeb	2022-09-10	2022-10-10	completed	2325	2325	
+10565397-1f43-4935-bfe7-2d63b7e8107d	eb3d28cf-051b-455c-9a7d-ea715c76ae01	15f52745-5dc1-4168-a69f-485da90b2a7d	2023-05-10	2023-05-15	ongoing	2325	200	
+6482be04-dbbb-4032-aa7d-5b5dcc3cdaa7	050ab61a-ead0-46e2-8eb6-12155da02dc5	578ebc58-a627-43c6-9cd9-8b9d2edd4522	2023-03-24	2023-03-25	ongoing	75	0	
+e0ab08e6-ebe6-4998-a488-c851aec0f9e7	b453b7ab-4380-4ff7-b31a-845965ae58b1	550031c9-c2c5-48ba-80bc-af15495ded7e	2023-05-11	2023-05-22	ongoing	770	0	
+3794a8db-e465-4e6b-866c-b648d67cdf9e	739805ab-4346-40bc-b9b6-b3dfe53b88a1	67de6f2e-1310-43b6-9d5a-fd5b706da7b9	2023-06-04	2023-06-12	ongoing	600	0	
+8c4bfabc-32f2-47c9-934e-64e1bea36d19	b453b7ab-4380-4ff7-b31a-845965ae58b1	3752310f-98c8-4c97-abf2-547bc52b3407	2023-06-08	2023-06-22	canceled	966	0	
+f7d308e1-38e3-4d3a-b520-443e48d43bb0	b453b7ab-4380-4ff7-b31a-845965ae58b1	3752310f-98c8-4c97-abf2-547bc52b3407	2023-05-29	2023-06-22	canceled	490	0	asd
+4a0804bb-5697-44e2-a797-ba3e8d425db7	16de6637-d403-4d78-b2ba-7e22d73cef8b	aaf5cb67-46e7-4db4-a76d-affeade5ccab	2023-06-15	2023-06-29	upcoming	980	0	sdafasdf
+622c7d3f-a9fb-441d-ae55-753e143c6433	cf51662b-0d11-45b1-8554-7933b43407bc	b7e1fe20-7909-48d2-977d-114cbf5d4bd7	2023-07-03	2023-07-19	ongoing	1280	0	\N
+e5e52034-68e6-43dc-8b63-472ca5a67373	eb3d28cf-051b-455c-9a7d-ea715c76ae01	0c1bda3f-c7f3-45a9-9a11-2e05f09cf5b0	2023-06-08	2023-07-06	canceled	1770	0	
+1eeed6c5-7487-4ff1-9525-040f236c5b9c	cb372e70-6464-4873-a191-ced9c9e8516d	15f52745-5dc1-4168-a69f-485da90b2a7d	2022-10-17	2022-11-17	canceled	2325	2325	
+\.
+
+
+--
+-- TOC entry 3401 (class 0 OID 17790)
+-- Dependencies: 216
+-- Data for Name: discount; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.discount (discount_id, user_id, percentage, start_date, end_date) FROM stdin;
+69d51651-4b68-41ae-936b-1cf0649d6013	84f88b3a-2a83-4d81-9677-d3d6e3a7ebb2	20	2023-03-20	2023-03-30
+d5ff5eb7-dc52-47d2-97db-6f46e0048e0a	84f88b3a-2a83-4d81-9677-d3d6e3a7ebb2	20	2023-06-08	2023-06-30
+dcd574fc-fbe4-4b94-b05d-6bc63c342f8c	113c05e5-2bde-4880-991e-509d927ee294	11	2023-06-13	2023-06-18
+\.
+
+
+--
+-- TOC entry 3403 (class 0 OID 17815)
+-- Dependencies: 218
+-- Data for Name: parking_slot; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.parking_slot (slot_id, vehicle_category, price, status) FROM stdin;
+593298a0-b43b-4ae6-ae35-6938b3cddb04	Car	75	available
+0c1bda3f-c7f3-45a9-9a11-2e05f09cf5b0	Car	75	available
+68694436-9c79-41f7-912e-b6b2210c3c93	Car	75	available
+ba410217-d3aa-427e-a15c-97a55e92b096	Car	75	available
+578ebc58-a627-43c6-9cd9-8b9d2edd4522	Car	75	available
+0c239510-e451-4edd-a85e-ec747c84bdeb	Car	70	available
+e20ac414-b3be-49d0-9851-3411c3a51784	Car	70	available
+627ff590-56fb-4851-a6b1-936a59522a84	Car	70	available
+15f52745-5dc1-4168-a69f-485da90b2a7d	Car	70	available
+8475184c-d8a7-4fe3-8aab-4255d8553a17	Car	70	available
+aaf5cb67-46e7-4db4-a76d-affeade5ccab	Motorcycle	70	available
+8d5ad971-46d7-40a1-b775-e9e42d3b9ebf	Motorcycle	70	available
+f69ccb77-dd1c-4483-9311-bfc9c2f22cc8	Motorcycle	70	available
+3752310f-98c8-4c97-abf2-547bc52b3407	Motorcycle	70	available
+550031c9-c2c5-48ba-80bc-af15495ded7e	Motorcycle	70	available
+c73120a3-7c22-4678-8f48-79abf37589f4	Bus	80	available
+d5c59174-064a-414d-a70b-0b6859c62249	Bus	80	available
+8a9351df-b0bf-440e-8451-f06e65247280	Bus	80	available
+af53835f-088b-4630-8ad5-9e06c65a240c	Bus	75	available
+78063f53-eeb7-4a84-bb3c-7fdb5f855644	Bus	75	available
+e34d0ca0-0227-4ccc-9f39-684e5f39e0bc	Bus	75	available
+9a87bb2d-d472-4b1b-9bd3-baddc73e7ad2	Truck	80	available
+b7e1fe20-7909-48d2-977d-114cbf5d4bd7	Truck	80	available
+bdd2f78d-dddc-45bd-bc16-992beae4b62a	Truck	80	available
+9a9c6935-bec3-407f-8470-aa49e98b0f5d	Truck	75	available
+67de6f2e-1310-43b6-9d5a-fd5b706da7b9	Truck	75	available
+5afc3b12-9b9a-4028-8c4f-525e3e431b19	Truck	75	available
+\.
+
+
+--
+-- TOC entry 3400 (class 0 OID 17776)
+-- Dependencies: 215
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (user_id, username, password, full_name, phone_number, category) FROM stdin;
+84f88b3a-2a83-4d81-9677-d3d6e3a7ebb2	backstab	8091feed093d8017027e4714304d3ed347eeaf0b2de618c627e41068a1db39ba	Alexander Nitlaf	+38 (067) 432-5317	client
+113c05e5-2bde-4880-991e-509d927ee294	vert1g0	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	Daniil Vasilev	+38 (096)352-2468	client
+41f6aa66-ea7b-47ed-837b-02a50390c224	sfdfds	3f0b9e09d8d1825217c17be20eb3cb4a0ef5dd82e3d4f5c88831266606108d82	Tymofii Striukov	+38 123 199-1234	client
+bf6b5822-585b-4ed2-b873-42f13c054413	yasosbiba	8091feed093d8017027e4714304d3ed347eeaf0b2de618c627e41068a1db39ba	Yasos Biba	+38 123 123-4444	client
+7c054a76-b476-4849-bda4-6ae7bfb20160	adminadmin	c4583ee4a5523724ee068fc966e447ac52991281b7ed5a4158c0b8fb4a488efe	Vladislav Ripets	+38 122 122-1221	administrator
+122804bd-381e-4cbe-ae15-973e5fc8592b	c0ldw3apon	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	Ivan Gryzlo	+38 (097)523-1267	client
+12bc823e-aa46-42c5-a4c3-e2b4d3bc4793	argent3	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	Daniil Skvortsov	+38 (068)236-1168	client
+57f8a549-1611-467b-ae1b-2437f03f6f62	grap3vine	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	Kirill Velichko	+38 (096)631-3598	client
+83bbf4b3-8321-4436-b2be-1463255dc2e8	sashreefg	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	Roflan Prikolovich	+38 123 123-4124	client
+\.
+
+
+--
+-- TOC entry 3402 (class 0 OID 17803)
+-- Dependencies: 217
+-- Data for Name: vehicle; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.vehicle (vehicle_id, user_id, plate_number, brand, vehicle_category) FROM stdin;
+ca5b5f77-0acd-457c-882a-7440419a33ee	57f8a549-1611-467b-ae1b-2437f03f6f62	AC1533BE	Toyota	Bus
+11ab303a-7325-4487-a457-0607628dcc80	57f8a549-1611-467b-ae1b-2437f03f6f62	CE1343BA	Audi	Truck
+09db9bb0-c69d-4671-bb87-787cbc5e62f8	122804bd-381e-4cbe-ae15-973e5fc8592b	AA6126MF	Volkswagen	Car
+a1641ef1-8768-4351-ab09-b354c45f98d9	122804bd-381e-4cbe-ae15-973e5fc8592b	BB4324CH	Toyota	Car
+eb3d28cf-051b-455c-9a7d-ea715c76ae01	84f88b3a-2a83-4d81-9677-d3d6e3a7ebb2	BA2578BA	Audi	Car
+16de6637-d403-4d78-b2ba-7e22d73cef8b	41f6aa66-ea7b-47ed-837b-02a50390c224	XD1234FD	BMW	Motorcycle
+cf51662b-0d11-45b1-8554-7933b43407bc	bf6b5822-585b-4ed2-b873-42f13c054413	XC2312FD	BEBRA	Truck
+739805ab-4346-40bc-b9b6-b3dfe53b88a1	12bc823e-aa46-42c5-a4c3-e2b4d3bc4793	CB8136AX	Toyota	Truck
+050ab61a-ead0-46e2-8eb6-12155da02dc5	12bc823e-aa46-42c5-a4c3-e2b4d3bc4793	BC6040CP	Chevrolet	Car
+aeb0789a-a31b-41f3-9aad-e653e9bab468	12bc823e-aa46-42c5-a4c3-e2b4d3bc4793	AC2345BE	Toyota	Bus
+b453b7ab-4380-4ff7-b31a-845965ae58b1	84f88b3a-2a83-4d81-9677-d3d6e3a7ebb2	BB4177CH	Jawa	Motorcycle
+cb372e70-6464-4873-a191-ced9c9e8516d	113c05e5-2bde-4880-991e-509d927ee294	CE1786BA	BMW	Car
+\.
+
+
+--
+-- TOC entry 3246 (class 2606 OID 17832)
+-- Name: booking booking_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_pkey PRIMARY KEY (booking_id);
+
+
+--
+-- TOC entry 3240 (class 2606 OID 17797)
+-- Name: discount discount_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.discount
+    ADD CONSTRAINT discount_pkey PRIMARY KEY (discount_id);
+
+
+--
+-- TOC entry 3244 (class 2606 OID 17822)
+-- Name: parking_slot parking_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parking_slot
+    ADD CONSTRAINT parking_slot_pkey PRIMARY KEY (slot_id);
+
+
+--
+-- TOC entry 3234 (class 2606 OID 17789)
+-- Name: users users_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_phone_number_key UNIQUE (phone_number);
+
+
+--
+-- TOC entry 3236 (class 2606 OID 17785)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 3238 (class 2606 OID 17787)
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
+-- TOC entry 3242 (class 2606 OID 17809)
+-- Name: vehicle vehicle_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vehicle
+    ADD CONSTRAINT vehicle_pkey PRIMARY KEY (vehicle_id);
+
+
+--
+-- TOC entry 3253 (class 2620 OID 17906)
+-- Name: booking calculate_booking_price_oninsert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER calculate_booking_price_oninsert BEFORE INSERT ON public.booking FOR EACH ROW EXECUTE FUNCTION public.calculate_booking_price();
+
+
+--
+-- TOC entry 3251 (class 2620 OID 17844)
+-- Name: users make_password_hash; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER make_password_hash BEFORE INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION public.encrypt_password();
+
+
+--
+-- TOC entry 3254 (class 2620 OID 17904)
+-- Name: booking recalculate_payment_onupdate; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER recalculate_payment_onupdate BEFORE UPDATE OF end_date ON public.booking FOR EACH ROW EXECUTE FUNCTION public.recalculate_payment();
+
+
+--
+-- TOC entry 3255 (class 2620 OID 17928)
+-- Name: booking trigger_update_parking_status; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_update_parking_status AFTER DELETE OR UPDATE OF status ON public.booking FOR EACH ROW EXECUTE FUNCTION public.update_parking_status();
+
+
+--
+-- TOC entry 3252 (class 2620 OID 17866)
+-- Name: users update_password_hash; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_password_hash BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.encrypt_password_update();
+
+
+--
+-- TOC entry 3249 (class 2606 OID 17838)
+-- Name: booking booking_slot_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_slot_id_fkey FOREIGN KEY (slot_id) REFERENCES public.parking_slot(slot_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3250 (class 2606 OID 17833)
+-- Name: booking booking_vehicle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_vehicle_id_fkey FOREIGN KEY (vehicle_id) REFERENCES public.vehicle(vehicle_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3247 (class 2606 OID 17798)
+-- Name: discount discount_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.discount
+    ADD CONSTRAINT discount_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3248 (class 2606 OID 17810)
+-- Name: vehicle vehicle_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vehicle
+    ADD CONSTRAINT vehicle_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3410 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+--
+
+GRANT USAGE ON SCHEMA public TO administrator;
+GRANT USAGE ON SCHEMA public TO client;
+GRANT USAGE ON SCHEMA public TO connect_user;
+
+
+--
+-- TOC entry 3412 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE booking; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.booking TO administrator;
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.booking TO client;
+
+
+--
+-- TOC entry 3413 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE booking_status; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT ON TABLE public.booking_status TO client;
+GRANT SELECT ON TABLE public.booking_status TO connect_user;
+GRANT SELECT ON TABLE public.booking_status TO administrator;
+
+
+--
+-- TOC entry 3414 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: TABLE discount; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.discount TO administrator;
+GRANT SELECT ON TABLE public.discount TO client;
+
+
+--
+-- TOC entry 3415 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: TABLE parking_slot; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.parking_slot TO administrator;
+GRANT SELECT,UPDATE ON TABLE public.parking_slot TO client;
+GRANT SELECT ON TABLE public.parking_slot TO connect_user;
+
+
+--
+-- TOC entry 3416 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: TABLE slot_status; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT ON TABLE public.slot_status TO client;
+GRANT SELECT ON TABLE public.slot_status TO connect_user;
+GRANT SELECT ON TABLE public.slot_status TO administrator;
+
+
+--
+-- TOC entry 3417 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: TABLE users; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.users TO administrator;
+GRANT SELECT,UPDATE ON TABLE public.users TO client;
+GRANT SELECT,INSERT ON TABLE public.users TO connect_user;
+
+
+--
+-- TOC entry 3418 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: TABLE vehicle; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.vehicle TO administrator;
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.vehicle TO client;
+
+
+-- Completed on 2023-11-01 20:44:24
+
+--
+-- PostgreSQL database dump complete
+--
+
