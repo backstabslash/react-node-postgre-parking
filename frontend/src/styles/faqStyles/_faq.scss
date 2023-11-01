@@ -8,6 +8,10 @@
   background-repeat: no-repeat;
   background-position: 0 75%;
   background-blend-mode: multiply;
+
+  @media (min-width: 1600px) {
+    background: linear-gradient(to bottom, $bg-gray 20%, $bg-white 80%);
+  }
 }
 
 .bg_for_about {

@@ -51,8 +51,7 @@ function Intro() {
                   className="intro-content__text__btns__book-ride"
                   to="/"
                 >
-                  New Booking &nbsp;{" "}
-                  <i className="fa-solid fa-circle-check"></i>
+                  New Booking
                 </Link>
                 <Link
                   className="intro-content__text__btns__learn-more"

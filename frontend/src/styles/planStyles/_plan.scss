@@ -44,6 +44,18 @@
       img {
         width: 17rem;
         height: auto;
+
+        @media (max-width: 500px) {
+          width: 8rem;
+          height: auto;
+        }
+
+        $min-width: 500px;
+        $max-width: 800px;
+        @media (min-width: #{$min-width}) and (max-width: #{$max-width}) {
+          width: 14rem;
+          height: auto;
+        }
       }
 
       h3 {
@@ -57,6 +69,22 @@
         color: $text-gray;
         line-height: 1.43;
         text-align: justify;
+      }
+
+      @media (max-width: 800px) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0rem;
+      }
+
+      &__top {
+        @media (max-width: 800px) {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
     }
   }

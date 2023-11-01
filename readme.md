@@ -53,6 +53,7 @@ To run the Super Parking application, follow these steps:
     npm start
     ```
     The backend will run on http://localhost:3001.
+    
 2. Start the frontend development server (React.js):
     ```bash
     cd frontend

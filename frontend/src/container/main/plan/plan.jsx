@@ -15,8 +15,10 @@ function Plan() {
 
             <div className="plan-container__boxes">
               <div className="plan-container__boxes__box">
-                <img src={SlotsVariety} alt="SlotsVariety" />
-                <h3>Slots Variety</h3>
+                <div className="plan-container__boxes__box__top">
+                  <img src={SlotsVariety} alt="SlotsVariety" />
+                  <h3>Slots Variety</h3>
+                </div>
                 <p>
                   Whatever your needs may be, we have the perfect slot for you,
                   choose from our vast selection of slots.
@@ -24,8 +26,10 @@ function Plan() {
               </div>
 
               <div className="plan-container__boxes__box">
-                <img src={ContactOperator} alt="ContactOperator" />
-                <h3>Contact Operator</h3>
+                <div className="plan-container__boxes__box__top">
+                  <img src={ContactOperator} alt="ContactOperator" />
+                  <h3>Contact Operator</h3>
+                </div>
                 <p>
                   Our friendly operators are always available to assist you with
                   any inquiries or issues you may have.
@@ -33,8 +37,10 @@ function Plan() {
               </div>
 
               <div className="plan-container__boxes__box">
-                <img src={VehicleSafety} alt="VehicleSafety" />
-                <h3>Vehicle Safety</h3>
+                <div className="plan-container__boxes__box__top">
+                  <img src={VehicleSafety} alt="VehicleSafety" />
+                  <h3>Vehicle Safety</h3>
+                </div>
                 <p>
                   Secure your parked vehicle with our anti-theft tips and
                   solutions, including well-lit parking and more.
