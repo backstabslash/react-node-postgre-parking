@@ -45,7 +45,7 @@
   gap: 3rem;
   width: 100%;
   justify-content: space-between;
-  padding: 0 3rem 0 3rem;
+  padding: 0;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
